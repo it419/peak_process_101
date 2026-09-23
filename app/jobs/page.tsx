@@ -7,6 +7,8 @@ export const metadata: Metadata = {
   description: "Open positions at Peak Process Partners.",
 };
 
+export const dynamic = "force-dynamic";
+
 export default async function PublicJobsPage() {
   const jobs = await getPublicJobs();
   return <PublicJobsListSwitcher jobs={jobs} />;
