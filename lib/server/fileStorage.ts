@@ -1,29 +1,41 @@
 import "server-only";
 import { randomUUID } from "crypto";
-import { mkdir, readFile, writeFile } from "fs/promises";
-import path from "path";
+import { GetObjectCommand, PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
+import type { Readable } from "stream";
 
 /**
- * Local-disk file storage for resumes/other application documents. Lives
- * under a private `storage/` directory at the project root (gitignored,
- * never under `public/`) — the only read path is an authenticated admin
- * route (lib/server/applicationRepository.ts + the download API route),
- * never a direct URL. Swappable for real object storage later (e.g. Vercel
- * Blob) without changing callers: they only ever see `storagePath` +
- * `readStoredFile`/`saveUploadedFile`.
+ * Object storage for resumes/other application documents — a self-hosted
+ * MinIO instance (S3-compatible API) rather than local disk, since Vercel's
+ * serverless functions can't write to arbitrary local paths (the original
+ * local-disk implementation this replaced worked in dev but failed outright
+ * in production). Callers only ever see `storagePath` (the S3 object key) +
+ * `readStoredFile`/`saveUploadedFile` — same shape as before, so nothing
+ * outside this file changed.
  */
-
-const STORAGE_ROOT = path.resolve(process.cwd(), "storage");
 
 function sanitizeFileName(name: string): string {
   return name.replace(/[^a-zA-Z0-9._-]/g, "_").slice(-150) || "file";
 }
 
-function assertWithinStorageRoot(absolutePath: string): void {
-  const resolved = path.resolve(absolutePath);
-  if (resolved !== STORAGE_ROOT && !resolved.startsWith(STORAGE_ROOT + path.sep)) {
-    throw new Error("Invalid file path");
+function getClient(): S3Client {
+  const endpoint = process.env.MINIO_ENDPOINT;
+  const accessKeyId = process.env.MINIO_ACCESS_KEY;
+  const secretAccessKey = process.env.MINIO_SECRET_KEY;
+  if (!endpoint || !accessKeyId || !secretAccessKey) {
+    throw new Error("MINIO_ENDPOINT, MINIO_ACCESS_KEY, and MINIO_SECRET_KEY must all be set.");
   }
+  return new S3Client({
+    region: "us-east-1", // required by the SDK; MinIO ignores the value but one must be set
+    endpoint: `https://${endpoint}`,
+    credentials: { accessKeyId, secretAccessKey },
+    forcePathStyle: true, // required for MinIO and most non-AWS S3-compatible endpoints
+  });
+}
+
+function getBucket(): string {
+  const bucket = process.env.MINIO_BUCKET;
+  if (!bucket) throw new Error("MINIO_BUCKET must be set.");
+  return bucket;
 }
 
 export interface SavedFileMeta {
@@ -33,19 +45,23 @@ export interface SavedFileMeta {
   mimeType: string;
 }
 
-/** Writes an uploaded file under `storage/<subdir>/<uuid>-<name>`, returning DB-ready metadata. */
+/** Uploads a file under `<subdir>/<uuid>-<name>`, returning DB-ready metadata. */
 export async function saveUploadedFile(file: File, subdir: string): Promise<SavedFileMeta> {
   const safeName = sanitizeFileName(file.name);
-  const relativePath = path.join(subdir, `${randomUUID()}-${safeName}`);
-  const absolutePath = path.join(STORAGE_ROOT, relativePath);
-  assertWithinStorageRoot(absolutePath);
-
-  await mkdir(path.dirname(absolutePath), { recursive: true });
+  const key = `${subdir}/${randomUUID()}-${safeName}`;
   const buffer = Buffer.from(await file.arrayBuffer());
-  await writeFile(absolutePath, buffer);
+
+  await getClient().send(
+    new PutObjectCommand({
+      Bucket: getBucket(),
+      Key: key,
+      Body: buffer,
+      ContentType: file.type || "application/octet-stream",
+    }),
+  );
 
   return {
-    storagePath: relativePath.split(path.sep).join("/"),
+    storagePath: key,
     fileName: file.name || safeName,
     fileSize: file.size,
     mimeType: file.type || "application/octet-stream",
@@ -54,7 +70,11 @@ export async function saveUploadedFile(file: File, subdir: string): Promise<Save
 
 /** Reads a previously-saved file back into memory for an authenticated download route to stream. */
 export async function readStoredFile(storagePath: string): Promise<Buffer> {
-  const absolutePath = path.resolve(STORAGE_ROOT, storagePath);
-  assertWithinStorageRoot(absolutePath);
-  return readFile(absolutePath);
+  const res = await getClient().send(new GetObjectCommand({ Bucket: getBucket(), Key: storagePath }));
+  const stream = res.Body as Readable;
+  const chunks: Buffer[] = [];
+  for await (const chunk of stream) {
+    chunks.push(Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk));
+  }
+  return Buffer.concat(chunks);
 }
