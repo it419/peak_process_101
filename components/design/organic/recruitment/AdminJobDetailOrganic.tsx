@@ -32,7 +32,7 @@ export function AdminJobDetailOrganic({ job }: { job: JobDetail }) {
         <div className="flex flex-wrap items-center gap-3">
           <Link
             href={`/admin/jobs/${job.id}/applications`}
-            className="text-sm font-medium text-organic-terracotta hover:underline"
+            className="text-sm font-medium text-organic-accent-text hover:underline"
           >
             View Applications
           </Link>

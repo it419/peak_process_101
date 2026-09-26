@@ -56,7 +56,7 @@ export function AdminJobsListOrganic({ jobs }: { jobs: JobSummary[] }) {
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           placeholder="Search jobs…"
-          className="h-11 w-full rounded-xl border border-organic-border bg-white/70 pl-10 pr-3 text-sm text-organic-ink placeholder:text-organic-ink-faint outline-none focus:border-organic-terracotta"
+          className="h-11 w-full rounded-xl border border-organic-border bg-organic-card pl-10 pr-3 text-sm text-organic-ink placeholder:text-organic-ink-faint outline-none focus:border-organic-accent"
         />
       </div>
 
@@ -102,7 +102,7 @@ export function AdminJobsListOrganic({ jobs }: { jobs: JobSummary[] }) {
                 {job.status !== "draft" && (
                   <Link
                     href={`/admin/jobs/${job.id}/applications`}
-                    className="text-sm font-medium text-organic-terracotta hover:underline"
+                    className="text-sm font-medium text-organic-accent-text hover:underline"
                   >
                     View Applications
                   </Link>

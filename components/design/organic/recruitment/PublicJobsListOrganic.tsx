@@ -3,7 +3,7 @@
 import { useMemo, useState } from "react";
 import Link from "next/link";
 import { Briefcase, Clock, MapPin, Search, TrendingUp } from "lucide-react";
-import { OrganicWordmark } from "@/components/design/organic/OrganicWordmark";
+import { OrganicCareersFrame } from "@/components/design/organic/recruitment/OrganicCareersFrame";
 import { CurveDivider } from "@/components/design/organic/CurveDivider";
 import { organicButtonVariants } from "@/components/design/organic/ui/OrganicButton";
 import { employmentTypeLabel, workModeLabel } from "@/lib/recruitment/constants";
@@ -28,13 +28,13 @@ function Pill({ icon: Icon, children }: { icon: typeof MapPin; children: React.R
 function JobCard({ job }: { job: PublicJobSummary }) {
   const experience = experienceRange(job.experienceMinYears, job.experienceMaxYears);
   return (
-    <div className="group flex flex-col rounded-3xl border border-organic-border bg-white/70 p-6 transition-all duration-200 hover:-translate-y-0.5 hover:border-organic-terracotta/40 hover:bg-white hover:shadow-lg hover:shadow-organic-ink/5">
+    <div className="group flex flex-col rounded-organic-card border border-organic-border bg-organic-card p-6 shadow-organic-rest transition-all duration-200 hover:-translate-y-0.5 hover:border-organic-accent/40 hover:shadow-organic-lift">
       <Link href={`/jobs/${job.id}`} className="min-w-0">
-        <h2 className="font-organic-display text-xl font-semibold text-organic-ink transition-colors group-hover:text-organic-terracotta">
+        <h2 className="font-organic-display text-xl font-semibold text-organic-ink transition-colors group-hover:text-organic-accent-text">
           {job.title}
         </h2>
       </Link>
-      {job.department && <p className="mt-1 text-sm font-medium text-organic-terracotta">{job.department}</p>}
+      {job.department && <p className="mt-1 text-sm font-medium text-organic-accent-text">{job.department}</p>}
 
       <div className="mt-4 flex flex-wrap gap-2">
         {job.location && <Pill icon={MapPin}>{job.location}</Pill>}
@@ -86,16 +86,10 @@ export function PublicJobsListOrganic({ jobs }: { jobs: PublicJobSummary[] }) {
   const hasFilters = query !== "" || department !== "all" || location !== "all";
 
   return (
-    <div className="min-h-screen bg-organic-bg font-organic-sans">
-      <header className="border-b border-organic-border px-5 py-5 sm:px-10">
-        <Link href="/jobs">
-          <OrganicWordmark />
-        </Link>
-      </header>
-
+    <OrganicCareersFrame>
       <div className="bg-organic-surface px-5 py-16 sm:px-10 sm:py-24">
         <div className="mx-auto max-w-2xl text-center">
-          <p className="text-[0.8125rem] font-semibold tracking-widest text-organic-terracotta uppercase">Open Positions</p>
+          <p className="text-[0.8125rem] font-semibold tracking-widest text-organic-accent-text uppercase">Open Positions</p>
           <h1 className="font-organic-display mt-4 text-[2.5rem] leading-[1.15] font-semibold text-organic-ink italic sm:text-[3.25rem]">
             Find work that moves people forward.
           </h1>
@@ -115,13 +109,13 @@ export function PublicJobsListOrganic({ jobs }: { jobs: PublicJobSummary[] }) {
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               placeholder="Search roles…"
-              className="h-11 w-full rounded-full border border-organic-border bg-white/70 pl-10 pr-4 text-sm text-organic-ink placeholder:text-organic-ink-faint outline-none transition-colors focus:border-organic-terracotta"
+              className="h-11 w-full rounded-organic-pill border border-organic-border-strong bg-organic-card pl-10 pr-4 text-sm text-organic-ink placeholder:text-organic-ink-faint outline-none transition-colors focus:border-organic-accent"
             />
           </div>
           <select
             value={department}
             onChange={(e) => setDepartment(e.target.value)}
-            className="h-11 rounded-full border border-organic-border bg-white/70 px-4 text-sm text-organic-ink outline-none transition-colors focus:border-organic-terracotta sm:w-52"
+            className="h-11 rounded-organic-pill border border-organic-border-strong bg-organic-card px-4 text-sm text-organic-ink outline-none transition-colors focus:border-organic-accent sm:w-52"
           >
             <option value="all">All Departments</option>
             {departments.map((d) => (
@@ -133,7 +127,7 @@ export function PublicJobsListOrganic({ jobs }: { jobs: PublicJobSummary[] }) {
           <select
             value={location}
             onChange={(e) => setLocation(e.target.value)}
-            className="h-11 rounded-full border border-organic-border bg-white/70 px-4 text-sm text-organic-ink outline-none transition-colors focus:border-organic-terracotta sm:w-52"
+            className="h-11 rounded-organic-pill border border-organic-border-strong bg-organic-card px-4 text-sm text-organic-ink outline-none transition-colors focus:border-organic-accent sm:w-52"
           >
             <option value="all">All Locations</option>
             {locations.map((l) => (
@@ -167,6 +161,6 @@ export function PublicJobsListOrganic({ jobs }: { jobs: PublicJobSummary[] }) {
           Don{"’"}t see the right fit? Check back soon — we{"’"}re always growing.
         </p>
       </div>
-    </div>
+    </OrganicCareersFrame>
   );
 }

@@ -53,7 +53,7 @@ export function ReviewStepOrganic() {
         </p>
       )}
 
-      <div className="mt-8 rounded-2xl border border-organic-terracotta/30 bg-white/70 p-4">
+      <div className="mt-8 rounded-2xl border border-organic-accent/30 bg-organic-card p-4">
         <OrganicCheckbox
           label="I confirm the information provided is accurate to the best of my knowledge."
           checked={confirmed}

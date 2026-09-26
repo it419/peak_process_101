@@ -41,7 +41,7 @@ export function OrganicStepShell({
     <div>
       <div className="rounded-[1.75rem] bg-organic-surface px-6 py-10 sm:px-12 sm:py-14">
         <div className="flex items-start justify-between gap-4">
-          <p className="text-[0.8125rem] font-semibold tracking-widest text-organic-terracotta uppercase">
+          <p className="text-[0.8125rem] font-semibold tracking-widest text-organic-accent-text uppercase">
             Step {String(index + 1).padStart(2, "0")} of {String(stepRegistry.length).padStart(2, "0")}
           </p>
           <OrganicSaveIndicator className="hidden sm:block" />

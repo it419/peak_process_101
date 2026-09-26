@@ -74,23 +74,93 @@
      Design 3 — Organic (Curved Editorial). Fraunces for display,
      Work Sans for body — distinct from both Design 1 and Design 2.
      ================================================================ */
+  /* Light ("day") values. Dark values override these same names further
+     down (see "Organic dark"), so components never branch on theme.
+     Text/background pairs are tuned to WCAG AA: >= 4.5:1 for text,
+     >= 3:1 for control boundaries (border-strong on card). */
   --color-organic-bg: #f7f2e9;
   --color-organic-surface: #efe7d8;
   --color-organic-surface-2: #e6dcc7;
-  --color-organic-border: #ded2b8;
+  --color-organic-card: #fdfbf7; /* cards, inputs, menus */
+  --color-organic-border: #ded2b8; /* decorative dividers + card edges */
+  --color-organic-border-strong: #8f846f; /* input/control boundaries */
   --color-organic-ink: #2a2621;
-  --color-organic-ink-muted: #6b6255;
-  --color-organic-ink-faint: #9a917f;
+  --color-organic-ink-muted: #5f574b;
+  --color-organic-ink-faint: #6f6657;
   --color-organic-gold: #b8934a;
-  --color-organic-terracotta: #bc6a4a;
-  --color-organic-terracotta-hover: #a85a3c;
-  --color-organic-success: #4a7a5c;
+
+  /* The single accent. `accent` fills buttons/checked controls; `accent-text`
+     is the slightly deeper shade used for accent-coloured text and links. */
+  --color-organic-accent: #a95636;
+  --color-organic-accent-hover: #924629;
+  --color-organic-accent-text: #9d4f31;
+  --color-organic-on-accent: #fffaf3;
+  --color-organic-accent-tint: #f3e2d8;
+  /* Legacy aliases — kept so any not-yet-migrated class still resolves. */
+  --color-organic-terracotta: var(--color-organic-accent);
+  --color-organic-terracotta-hover: var(--color-organic-accent-hover);
+
+  --color-organic-success: #3f6e51;
   --color-organic-success-tint: #e6ebe1;
-  --color-organic-error: #a8483c;
+  --color-organic-error: #a1402f;
   --color-organic-error-tint: #f1e4df;
+
+  /* One radius per component family. */
+  --radius-organic-card: 1.5rem;
+  --radius-organic-control: 0.75rem;
+  --radius-organic-pill: 9999px;
+
+  /* One shadow style at two strengths (resting, lifted) plus menus. The
+     colour comes from --organic-shadow-rgb so dark mode can deepen it. */
+  --shadow-organic-rest: 0 1px 2px rgb(var(--organic-shadow-rgb) / calc(0.05 * var(--organic-shadow-k))), 0 1px 1px rgb(var(--organic-shadow-rgb) / calc(0.03 * var(--organic-shadow-k)));
+  --shadow-organic-lift: 0 14px 32px -14px rgb(var(--organic-shadow-rgb) / calc(0.22 * var(--organic-shadow-k))), 0 4px 10px -4px rgb(var(--organic-shadow-rgb) / calc(0.08 * var(--organic-shadow-k)));
+  --shadow-organic-menu: 0 18px 40px -12px rgb(var(--organic-shadow-rgb) / calc(0.28 * var(--organic-shadow-k))), 0 2px 6px rgb(var(--organic-shadow-rgb) / calc(0.08 * var(--organic-shadow-k)));
 
   --font-organic-display: var(--font-fraunces), Georgia, serif;
   --font-organic-sans: var(--font-work-sans), system-ui, sans-serif;
+}
+
+:root {
+  --organic-shadow-rgb: 42 38 33;
+  --organic-shadow-k: 1;
+}
+
+/* ================================================================
+   Organic dark. Same component structure, only token values change.
+   Scoped to pages that opt in with a `data-organic-surface` element
+   (currently the careers pages), so the Organic onboarding flow is
+   untouched until it opts in too. `data-organic-theme` is set on <html>
+   before first paint by the inline script in app/layout.tsx.
+   ================================================================ */
+:root[data-organic-theme="dark"]:has([data-organic-surface]) {
+  color-scheme: dark;
+  --color-organic-bg: #16130f;
+  --color-organic-surface: #221d17;
+  --color-organic-surface-2: #29241d;
+  --color-organic-card: #26211a;
+  --color-organic-border: #3a332a;
+  --color-organic-border-strong: #807665;
+  --color-organic-ink: #f2ebdf;
+  --color-organic-ink-muted: #bdb2a1;
+  --color-organic-ink-faint: #9a8f7d;
+  --color-organic-gold: #d1ad63;
+  --color-organic-accent: #e2906c;
+  --color-organic-accent-hover: #eba385;
+  --color-organic-accent-text: #e8987a;
+  --color-organic-on-accent: #1a120c;
+  --color-organic-accent-tint: #3a2419;
+  --color-organic-success: #8cc2a0;
+  --color-organic-success-tint: #1b2a21;
+  --color-organic-error: #ec8a7c;
+  --color-organic-error-tint: #2e1a17;
+  --organic-shadow-rgb: 0 0 0;
+  --organic-shadow-k: 2.2;
+}
+
+/* Careers pages paint the whole canvas (overscroll included) in the
+   Organic background, in either theme. */
+body:has([data-organic-surface]) {
+  background: var(--color-organic-bg);
 }
 
 html {

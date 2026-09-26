@@ -58,13 +58,13 @@ export function AdminApplicationsListOrganic({
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Search candidates…"
-            className="h-11 w-full rounded-xl border border-organic-border bg-white/70 pl-10 pr-3 text-sm text-organic-ink placeholder:text-organic-ink-faint outline-none focus:border-organic-terracotta"
+            className="h-11 w-full rounded-xl border border-organic-border bg-organic-card pl-10 pr-3 text-sm text-organic-ink placeholder:text-organic-ink-faint outline-none focus:border-organic-accent"
           />
         </div>
         <select
           value={statusFilter}
           onChange={(e) => setStatusFilter(e.target.value)}
-          className="h-11 rounded-xl border border-organic-border bg-white/70 px-3 text-sm text-organic-ink outline-none focus:border-organic-terracotta"
+          className="h-11 rounded-xl border border-organic-border bg-organic-card px-3 text-sm text-organic-ink outline-none focus:border-organic-accent"
         >
           <option value="all">All Statuses</option>
           {APPLICATION_STATUS_OPTIONS.map((opt) => (
@@ -76,7 +76,7 @@ export function AdminApplicationsListOrganic({
         <button
           type="button"
           onClick={() => setNewestFirst((v) => !v)}
-          className="flex h-11 items-center gap-1.5 rounded-xl border border-organic-border bg-white/70 px-3 text-sm text-organic-ink hover:border-organic-terracotta"
+          className="flex h-11 items-center gap-1.5 rounded-xl border border-organic-border bg-organic-card px-3 text-sm text-organic-ink hover:border-organic-accent"
         >
           <ArrowUpDown className="size-3.5" aria-hidden />
           {newestFirst ? "Newest first" : "Oldest first"}
@@ -109,7 +109,7 @@ export function AdminApplicationsListOrganic({
                   <span className={cn("size-1.5 rounded-full", STATUS_DOT[app.status])} aria-hidden />
                   {applicationStatusLabel(app.status)}
                 </span>
-                <Link href={`/admin/applications/${app.id}`} className="text-sm font-medium text-organic-terracotta hover:underline">
+                <Link href={`/admin/applications/${app.id}`} className="text-sm font-medium text-organic-accent-text hover:underline">
                   View Application
                 </Link>
               </div>

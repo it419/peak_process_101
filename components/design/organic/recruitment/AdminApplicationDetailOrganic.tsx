@@ -40,7 +40,7 @@ export function AdminApplicationDetailOrganic({ application }: { application: Ap
           <p className="mt-1 text-sm text-organic-ink-muted">
             {application.jobTitle} · Reference {application.reference}
           </p>
-          <p className="mt-2 text-sm font-medium text-organic-terracotta">{applicationStatusLabel(application.status)}</p>
+          <p className="mt-2 text-sm font-medium text-organic-accent-text">{applicationStatusLabel(application.status)}</p>
         </div>
         {nextStatuses.length > 0 && (
           <div className="flex flex-wrap gap-2">
@@ -82,7 +82,7 @@ export function AdminApplicationDetailOrganic({ application }: { application: Ap
               <a
                 key={doc.id}
                 href={`/api/admin/applications/${application.id}/documents/${doc.id}`}
-                className="flex items-center gap-3 rounded-xl border border-organic-border bg-white/60 px-4 py-3 hover:bg-white"
+                className="flex items-center gap-3 rounded-xl border border-organic-border bg-organic-card px-4 py-3 hover:bg-organic-card"
               >
                 <FileText className="size-4 text-organic-ink-faint" aria-hidden />
                 <span className="text-sm text-organic-ink">
@@ -110,7 +110,7 @@ export function AdminApplicationDetailOrganic({ application }: { application: Ap
                 <Link
                   href={application.linkedinUrl}
                   target="_blank"
-                  className="text-sm font-medium text-organic-terracotta hover:underline"
+                  className="text-sm font-medium text-organic-accent-text hover:underline"
                 >
                   LinkedIn profile
                 </Link>
@@ -119,7 +119,7 @@ export function AdminApplicationDetailOrganic({ application }: { application: Ap
                 <Link
                   href={application.portfolioUrl}
                   target="_blank"
-                  className="text-sm font-medium text-organic-terracotta hover:underline"
+                  className="text-sm font-medium text-organic-accent-text hover:underline"
                 >
                   Portfolio / Website
                 </Link>

@@ -46,7 +46,7 @@ export function OrganicDashboard() {
         ) : (
           <>
             <div className="rounded-[1.75rem] bg-organic-surface px-6 py-10 sm:px-12 sm:py-14">
-              <p className="text-[0.8125rem] font-semibold tracking-widest text-organic-terracotta uppercase">
+              <p className="text-[0.8125rem] font-semibold tracking-widest text-organic-accent-text uppercase">
                 Peak Process Partners
               </p>
               <h1 className="font-organic-display mt-3 text-[2rem] leading-tight font-semibold text-organic-ink sm:text-[2.5rem]">
@@ -54,7 +54,7 @@ export function OrganicDashboard() {
                   <>You{"’"}re all set{firstName ? `, ${firstName}` : ""}.</>
                 ) : firstName ? (
                   <>
-                    Welcome back, <span className="text-organic-terracotta italic">{firstName}</span>.
+                    Welcome back, <span className="text-organic-accent-text italic">{firstName}</span>.
                   </>
                 ) : (
                   <>Welcome to Peak Process Partners.</>
@@ -68,7 +68,7 @@ export function OrganicDashboard() {
 
               <div className="mt-6 h-1.5 max-w-sm overflow-hidden rounded-full bg-organic-surface-2">
                 <div
-                  className="h-full rounded-full bg-organic-terracotta transition-[width] duration-500"
+                  className="h-full rounded-full bg-organic-accent transition-[width] duration-500"
                   style={{ width: `${percent}%` }}
                 />
               </div>
@@ -77,7 +77,7 @@ export function OrganicDashboard() {
                 <div className="mt-7 flex flex-wrap items-center gap-5">
                   <Link
                     href={fullName ? `/onboarding/${currentStep.slug}` : "/onboarding/welcome"}
-                    className="inline-flex h-12 items-center justify-center gap-2 rounded-full bg-organic-terracotta px-6 text-sm font-medium text-organic-bg transition-colors hover:bg-organic-terracotta-hover"
+                    className="inline-flex h-12 items-center justify-center gap-2 rounded-full bg-organic-accent px-6 text-sm font-medium text-organic-on-accent transition-colors hover:bg-organic-accent-hover"
                   >
                     Continue onboarding {"→"}
                   </Link>

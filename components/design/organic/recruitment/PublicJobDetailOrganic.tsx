@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { Banknote, Briefcase, Clock, MapPin, TrendingUp } from "lucide-react";
-import { OrganicWordmark } from "@/components/design/organic/OrganicWordmark";
+import { OrganicCareersFrame } from "@/components/design/organic/recruitment/OrganicCareersFrame";
 import { CurveDivider } from "@/components/design/organic/CurveDivider";
 import { organicButtonVariants } from "@/components/design/organic/ui/OrganicButton";
 import { employmentTypeLabel, workModeLabel } from "@/lib/recruitment/constants";
@@ -23,7 +23,7 @@ function formatSalary(min: number | null, max: number | null): string | null {
 
 function Pill({ icon: Icon, children }: { icon: typeof MapPin; children: React.ReactNode }) {
   return (
-    <span className="inline-flex items-center gap-1.5 rounded-full border border-organic-border bg-white/70 px-3 py-1 text-xs font-medium text-organic-ink-muted">
+    <span className="inline-flex items-center gap-1.5 rounded-full border border-organic-border bg-organic-card px-3 py-1 text-xs font-medium text-organic-ink-muted">
       <Icon className="size-3.5" aria-hidden />
       {children}
     </span>
@@ -53,7 +53,7 @@ function BulletList({ text }: { text: string | null }) {
     <ul className="mt-3 space-y-2">
       {items.map((item) => (
         <li key={item} className="flex gap-2.5 text-[0.9375rem] leading-relaxed text-organic-ink-muted">
-          <span className="mt-2 size-1 shrink-0 rounded-full bg-organic-terracotta" aria-hidden />
+          <span className="mt-2 size-1 shrink-0 rounded-full bg-organic-accent" aria-hidden />
           {item}
         </li>
       ))}
@@ -66,12 +66,7 @@ export function PublicJobDetailOrganic({ job }: { job: PublicJobDetail }) {
   const salary = formatSalary(job.salaryMin, job.salaryMax);
 
   return (
-    <div className="min-h-screen bg-organic-bg font-organic-sans">
-      <header className="border-b border-organic-border px-5 py-5 sm:px-10">
-        <Link href="/jobs">
-          <OrganicWordmark />
-        </Link>
-      </header>
+    <OrganicCareersFrame>
 
       <div className="bg-organic-surface px-5 py-14 sm:px-10 sm:py-16">
         <div className="mx-auto max-w-6xl">
@@ -81,7 +76,7 @@ export function PublicJobDetailOrganic({ job }: { job: PublicJobDetail }) {
           <h1 className="font-organic-display mt-4 text-[2.25rem] leading-[1.1] font-semibold text-organic-ink sm:text-[2.75rem]">
             {job.title}
           </h1>
-          {job.department && <p className="mt-2 text-sm font-medium text-organic-terracotta">{job.department}</p>}
+          {job.department && <p className="mt-2 text-sm font-medium text-organic-accent-text">{job.department}</p>}
           <div className="mt-5 flex flex-wrap gap-2">
             {job.location && <Pill icon={MapPin}>{job.location}</Pill>}
             <Pill icon={Briefcase}>{employmentTypeLabel(job.employmentType)}</Pill>
@@ -126,7 +121,7 @@ export function PublicJobDetailOrganic({ job }: { job: PublicJobDetail }) {
                     <p className="text-xs font-medium tracking-wide text-organic-ink-faint uppercase">Required</p>
                     <div className="mt-2 flex flex-wrap gap-2">
                       {job.requiredSkills.map((s) => (
-                        <span key={s} className="rounded-full border border-organic-border bg-white/70 px-3 py-1 text-sm text-organic-ink">
+                        <span key={s} className="rounded-full border border-organic-border bg-organic-card px-3 py-1 text-sm text-organic-ink">
                           {s}
                         </span>
                       ))}
@@ -162,7 +157,7 @@ export function PublicJobDetailOrganic({ job }: { job: PublicJobDetail }) {
           </div>
 
           <aside className="lg:sticky lg:top-10">
-            <div className="rounded-3xl border border-organic-border bg-white/70 p-6">
+            <div className="rounded-organic-card border border-organic-border bg-organic-card p-6 shadow-organic-rest">
               <p className="text-xs font-medium tracking-wide text-organic-ink-faint uppercase">You{"’"}re applying for</p>
               <p className="mt-1.5 font-organic-display text-lg font-semibold text-organic-ink">{job.title}</p>
 
@@ -184,6 +179,6 @@ export function PublicJobDetailOrganic({ job }: { job: PublicJobDetail }) {
           </aside>
         </div>
       </div>
-    </div>
+    </OrganicCareersFrame>
   );
 }

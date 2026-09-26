@@ -28,8 +28,8 @@ export function AdminShellOrganic({ adminName, children }: { adminName: string; 
                 className={cn(
                   "text-sm font-medium transition-colors",
                   pathname?.startsWith("/admin/jobs")
-                    ? "text-organic-terracotta"
-                    : "text-organic-ink-muted hover:text-organic-terracotta",
+                    ? "text-organic-accent-text"
+                    : "text-organic-ink-muted hover:text-organic-accent-text",
                 )}
               >
                 Jobs
@@ -41,7 +41,7 @@ export function AdminShellOrganic({ adminName, children }: { adminName: string; 
             <button
               type="button"
               onClick={handleLogout}
-              className="text-sm font-medium text-organic-ink-muted transition-colors hover:text-organic-terracotta"
+              className="text-sm font-medium text-organic-ink-muted transition-colors hover:text-organic-accent-text"
             >
               Log out
             </button>

@@ -48,7 +48,7 @@ export function EmergencyContactStepOrganic() {
           <OrganicCheckbox label="Same as my home address" {...register("sameAsHomeAddress")} />
           {sameAsHomeAddress ? (
             homeAddress ? (
-              <p className="rounded-xl border border-organic-border bg-white/70 px-4 py-3 text-sm text-organic-ink-muted">
+              <p className="rounded-xl border border-organic-border bg-organic-card px-4 py-3 text-sm text-organic-ink-muted">
                 {homeAddress}
               </p>
             ) : (

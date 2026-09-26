@@ -21,11 +21,11 @@ export const OrganicCheckbox = forwardRef<HTMLInputElement, OrganicCheckboxProps
           type="checkbox"
           id={inputId}
           name={name}
-          className="peer size-full cursor-pointer appearance-none rounded-full border border-organic-ink-faint bg-white/70 transition-colors checked:border-organic-terracotta checked:bg-organic-terracotta focus-visible:outline-2 focus-visible:outline-organic-terracotta focus-visible:outline-offset-2"
+          className="peer size-full cursor-pointer appearance-none rounded-full border border-organic-ink-faint bg-organic-card transition-colors checked:border-organic-accent checked:bg-organic-accent focus-visible:outline-2 focus-visible:outline-organic-accent focus-visible:outline-offset-2"
           {...props}
         />
         <Check
-          className="pointer-events-none absolute inset-0 m-auto size-3 text-organic-bg opacity-0 transition-opacity peer-checked:opacity-100"
+          className="pointer-events-none absolute inset-0 m-auto size-3 text-organic-on-accent opacity-0 transition-opacity peer-checked:opacity-100"
           strokeWidth={3}
           aria-hidden
         />
