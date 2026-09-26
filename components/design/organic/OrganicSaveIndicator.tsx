@@ -20,8 +20,8 @@ export function OrganicSaveIndicator({ className }: { className?: string }) {
     content = (
       <span className="flex items-center gap-1.5 text-organic-ink-faint">
         <span className="relative flex size-1.5">
-          <span className="absolute inline-flex size-full animate-ping rounded-full bg-organic-terracotta opacity-75" />
-          <span className="relative inline-flex size-1.5 rounded-full bg-organic-terracotta" />
+          <span className="absolute inline-flex size-full animate-ping rounded-full bg-organic-accent opacity-75" />
+          <span className="relative inline-flex size-1.5 rounded-full bg-organic-accent" />
         </span>
         Saving{"…"}
       </span>

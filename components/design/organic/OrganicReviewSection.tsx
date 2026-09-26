@@ -35,7 +35,7 @@ export function OrganicReviewSection({ title, status, href, summary }: OrganicRe
         </p>
         {summary && <p className="mt-1 truncate text-sm text-organic-ink-muted">{summary}</p>}
       </div>
-      <Link href={href} className="shrink-0 text-sm font-medium text-organic-terracotta hover:underline">
+      <Link href={href} className="shrink-0 text-sm font-medium text-organic-accent-text hover:underline">
         Edit
       </Link>
     </div>

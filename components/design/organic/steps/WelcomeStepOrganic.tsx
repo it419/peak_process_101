@@ -19,7 +19,7 @@ export function WelcomeStepOrganic() {
       stepId="welcome"
       title={
         <>
-          Welcome aboard, <span className="text-organic-terracotta italic">{firstName || "new hire"}</span>.
+          Welcome aboard, <span className="text-organic-accent-text italic">{firstName || "new hire"}</span>.
         </>
       }
       description="This portal will guide you through every step of your onboarding — personal details, benefits, and required documents. It should take about 10–15 minutes."
@@ -34,7 +34,7 @@ export function WelcomeStepOrganic() {
         <ul className="mt-4 space-y-2.5 text-[0.9375rem] leading-relaxed text-organic-ink-muted">
           {READY_LIST.map((item) => (
             <li key={item} className="flex gap-2.5">
-              <span className="mt-2 size-1 shrink-0 rounded-full bg-organic-terracotta" aria-hidden />
+              <span className="mt-2 size-1 shrink-0 rounded-full bg-organic-accent" aria-hidden />
               {item}
             </li>
           ))}

@@ -1,23 +1,18 @@
 import Link from "next/link";
 import { Check } from "lucide-react";
-import { OrganicWordmark } from "@/components/design/organic/OrganicWordmark";
+import { OrganicCareersFrame } from "@/components/design/organic/recruitment/OrganicCareersFrame";
 import { organicButtonVariants } from "@/components/design/organic/ui/OrganicButton";
 import { CurveDivider } from "@/components/design/organic/CurveDivider";
 
 export function ApplicationConfirmationOrganic({ jobTitle, reference }: { jobTitle: string; reference: string }) {
   return (
-    <div className="min-h-screen bg-organic-bg font-organic-sans">
-      <header className="border-b border-organic-border px-5 py-5 sm:px-10">
-        <Link href="/jobs">
-          <OrganicWordmark />
-        </Link>
-      </header>
+    <OrganicCareersFrame>
 
       <div className="flex flex-col items-center bg-organic-surface px-5 py-16 text-center sm:py-20">
         <span className="flex size-14 items-center justify-center rounded-full bg-organic-success-tint text-organic-success">
           <Check className="size-7" strokeWidth={2.5} />
         </span>
-        <p className="mt-6 text-[0.8125rem] font-semibold tracking-widest text-organic-terracotta uppercase">
+        <p className="mt-6 text-[0.8125rem] font-semibold tracking-widest text-organic-accent-text uppercase">
           Application Received
         </p>
         <h1 className="font-organic-display mt-2 max-w-lg text-[1.75rem] font-semibold text-organic-ink sm:text-[2rem]">
@@ -40,6 +35,6 @@ export function ApplicationConfirmationOrganic({ jobTitle, reference }: { jobTit
           Browse more positions
         </Link>
       </div>
-    </div>
+    </OrganicCareersFrame>
   );
 }

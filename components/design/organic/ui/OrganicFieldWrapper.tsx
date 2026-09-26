@@ -24,7 +24,7 @@ export function OrganicFieldWrapper({
     <div className={cn("flex flex-col gap-1.5", className)}>
       <label htmlFor={htmlFor} className="text-[0.8125rem] font-medium text-organic-ink-muted">
         {label}
-        {required && <span className="ml-1 text-organic-terracotta">*</span>}
+        {required && <span className="ml-1 text-organic-accent-text">*</span>}
       </label>
       {children}
       <p

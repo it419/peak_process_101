@@ -4,7 +4,7 @@ import Link from "next/link";
 import { Banknote, Briefcase, Clock, MapPin, TrendingUp, Upload } from "lucide-react";
 import { useJobApplicationFormLogic } from "@/hooks/recruitment/useJobApplicationFormLogic";
 import { EDUCATION_OPTIONS, employmentTypeLabel, workModeLabel } from "@/lib/recruitment/constants";
-import { OrganicWordmark } from "@/components/design/organic/OrganicWordmark";
+import { OrganicCareersFrame } from "@/components/design/organic/recruitment/OrganicCareersFrame";
 import { OrganicTextField } from "@/components/design/organic/ui/OrganicTextField";
 import { OrganicTextareaField } from "@/components/design/organic/ui/OrganicTextareaField";
 import { OrganicSelectField } from "@/components/design/organic/ui/OrganicSelectField";
@@ -58,12 +58,7 @@ export function JobApplicationFormOrganic({ job }: { job: PublicJobDetail }) {
   const salary = formatSalary(job.salaryMin, job.salaryMax);
 
   return (
-    <div className="min-h-screen bg-organic-bg font-organic-sans">
-      <header className="border-b border-organic-border px-5 py-5 sm:px-10">
-        <Link href="/jobs">
-          <OrganicWordmark />
-        </Link>
-      </header>
+    <OrganicCareersFrame>
 
       <div className="bg-organic-surface px-5 py-14 sm:px-10 sm:py-16">
         <div className="mx-auto max-w-6xl">
@@ -82,7 +77,7 @@ export function JobApplicationFormOrganic({ job }: { job: PublicJobDetail }) {
 
       <div className="mx-auto max-w-6xl px-5 py-10 sm:px-10">
         <div className="grid grid-cols-1 gap-10 lg:grid-cols-[1fr_320px] lg:items-start">
-          <form onSubmit={onContinue} className="min-w-0 rounded-3xl border border-organic-border bg-white/60 p-6 sm:p-8">
+          <form onSubmit={onContinue} className="min-w-0 rounded-organic-card border border-organic-border bg-organic-card p-6 shadow-organic-rest sm:p-8">
             <div className="flex flex-col gap-9">
               <section>
                 <h2 className="font-organic-display text-lg font-semibold text-organic-ink">Your details</h2>
@@ -117,10 +112,10 @@ export function JobApplicationFormOrganic({ job }: { job: PublicJobDetail }) {
                 <div className="mt-4 flex flex-col gap-5">
                   <div>
                     <label className="text-[0.8125rem] font-medium text-organic-ink-muted">
-                      Resume <span className="text-organic-terracotta">*</span>
+                      Resume <span className="text-organic-accent-text">*</span>
                     </label>
                     <div className="mt-1.5">
-                      <label className="flex h-12 w-fit cursor-pointer items-center gap-2 rounded-full border border-organic-ink-faint/50 bg-transparent px-5 text-sm font-medium text-organic-ink transition-colors hover:border-organic-terracotta hover:text-organic-terracotta">
+                      <label className="flex h-12 w-fit cursor-pointer items-center gap-2 rounded-organic-pill border border-organic-border-strong bg-transparent px-5 text-sm font-medium text-organic-ink transition-colors hover:border-organic-accent hover:text-organic-accent-text">
                         <Upload className="size-4" aria-hidden />
                         {resumeFile ? "Replace file" : "Upload resume"}
                         <input
@@ -158,7 +153,7 @@ export function JobApplicationFormOrganic({ job }: { job: PublicJobDetail }) {
                   />
 
                   <div>
-                    <label className="flex h-12 w-fit cursor-pointer items-center gap-2 rounded-full border border-organic-ink-faint/50 bg-transparent px-5 text-sm font-medium text-organic-ink transition-colors hover:border-organic-terracotta hover:text-organic-terracotta">
+                    <label className="flex h-12 w-fit cursor-pointer items-center gap-2 rounded-organic-pill border border-organic-border-strong bg-transparent px-5 text-sm font-medium text-organic-ink transition-colors hover:border-organic-accent hover:text-organic-accent-text">
                       <Upload className="size-4" aria-hidden />
                       {otherFile ? "Replace additional file" : "Attach additional document (optional)"}
                       <input type="file" className="hidden" onChange={(e) => setOtherFile(e.target.files?.[0] ?? null)} />
@@ -181,7 +176,7 @@ export function JobApplicationFormOrganic({ job }: { job: PublicJobDetail }) {
           </form>
 
           <aside className="lg:sticky lg:top-10">
-            <div className="rounded-3xl border border-organic-border bg-white/70 p-6">
+            <div className="rounded-organic-card border border-organic-border bg-organic-card p-6 shadow-organic-rest">
               <p className="text-xs font-medium tracking-wide text-organic-ink-faint uppercase">Applying for</p>
               <p className="mt-1.5 font-organic-display text-lg font-semibold text-organic-ink">{job.title}</p>
 
@@ -196,6 +191,6 @@ export function JobApplicationFormOrganic({ job }: { job: PublicJobDetail }) {
           </aside>
         </div>
       </div>
-    </div>
+    </OrganicCareersFrame>
   );
 }
