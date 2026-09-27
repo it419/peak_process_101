@@ -4,7 +4,7 @@ import { ArrowRight, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils/cn";
 
 export const organicButtonVariants = cva(
-  "inline-flex items-center justify-center gap-2 rounded-organic-pill whitespace-nowrap font-medium transition-colors duration-150 outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-organic-accent disabled:cursor-not-allowed disabled:opacity-40",
+  "inline-flex items-center justify-center gap-2 rounded-organic-pill whitespace-nowrap font-medium transition-[color,background-color,border-color,scale] duration-150 ease-out outline-none active:scale-[0.97] motion-reduce:active:scale-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-organic-accent disabled:cursor-not-allowed disabled:opacity-40",
   {
     variants: {
       variant: {

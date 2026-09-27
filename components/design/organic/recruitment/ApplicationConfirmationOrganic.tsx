@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { Check } from "lucide-react";
 import { OrganicCareersFrame } from "@/components/design/organic/recruitment/OrganicCareersFrame";
-import { careersContainer } from "@/components/design/organic/recruitment/careersUi";
+import { NAV_BACK, careersContainer } from "@/components/design/organic/recruitment/careersUi";
 import { organicButtonVariants } from "@/components/design/organic/ui/OrganicButton";
 import { CurveDivider } from "@/components/design/organic/CurveDivider";
 
@@ -30,7 +30,7 @@ export function ApplicationConfirmationOrganic({ jobTitle, reference }: { jobTit
             <p className="mt-1 font-mono text-[0.9375rem] tracking-wide text-organic-ink">{reference}</p>
           </div>
         )}
-        <Link href="/jobs" className={`${organicButtonVariants({ variant: "primary" })} mt-10`}>
+        <Link href="/jobs" transitionTypes={NAV_BACK} className={`${organicButtonVariants({ variant: "primary" })} mt-10`}>
           Browse more positions
         </Link>
       </main>

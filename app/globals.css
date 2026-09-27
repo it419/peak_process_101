@@ -265,3 +265,79 @@ body {
   letter-spacing: 0.12em;
   text-transform: uppercase;
 }
+
+/* ================================================================
+   Organic careers route transitions (React <ViewTransition>, see
+   OrganicCareersFrame). Forward = deeper into list → detail → apply.
+   Short, small offsets: this should read as continuity, not motion.
+   ================================================================ */
+::view-transition {
+  pointer-events: none;
+}
+
+::view-transition-group(organic-careers-header) {
+  animation: none;
+  z-index: 100;
+}
+::view-transition-old(organic-careers-header) {
+  display: none;
+}
+::view-transition-new(organic-careers-header) {
+  animation: none;
+}
+
+::view-transition-old(.organic-nav-forward) {
+  --organic-slide: -24px;
+  animation:
+    140ms ease-in both organic-fade reverse,
+    280ms cubic-bezier(0.4, 0, 0.2, 1) both organic-slide reverse;
+}
+::view-transition-new(.organic-nav-forward) {
+  --organic-slide: 24px;
+  animation:
+    200ms ease-out 100ms both organic-fade,
+    320ms cubic-bezier(0.22, 1, 0.36, 1) both organic-slide;
+}
+::view-transition-old(.organic-nav-back) {
+  --organic-slide: 24px;
+  animation:
+    140ms ease-in both organic-fade reverse,
+    280ms cubic-bezier(0.4, 0, 0.2, 1) both organic-slide reverse;
+}
+::view-transition-new(.organic-nav-back) {
+  --organic-slide: -24px;
+  animation:
+    200ms ease-out 100ms both organic-fade,
+    320ms cubic-bezier(0.22, 1, 0.36, 1) both organic-slide;
+}
+
+@keyframes organic-fade {
+  from {
+    opacity: 0;
+  }
+}
+@keyframes organic-slide {
+  from {
+    translate: var(--organic-slide) 0;
+  }
+  to {
+    translate: 0 0;
+  }
+}
+
+/* Reduced motion: keep a quick crossfade, drop all movement. */
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation-name: organic-fade !important;
+    animation-duration: 120ms !important;
+    animation-delay: 0s !important;
+  }
+  ::view-transition-old(*) {
+    animation-direction: reverse !important;
+  }
+  /* The pinned header never animates. */
+  ::view-transition-new(organic-careers-header) {
+    animation: none !important;
+  }
+}
