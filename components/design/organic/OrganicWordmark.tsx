@@ -2,8 +2,15 @@ import { PeakMark } from "@/components/Logo";
 import { cn } from "@/lib/utils/cn";
 
 /** Same brand mark as the other two designs, paired with Organic's own
- *  Fraunces italic lockup instead of Design 1's Lora or Dark's Space Grotesk. */
-export function OrganicWordmark({ className }: { className?: string }) {
+ *  Fraunces italic lockup instead of Design 1's Lora or Dark's Space Grotesk.
+ *  `subtitle` names the product area (onboarding flow vs. careers site). */
+export function OrganicWordmark({
+  className,
+  subtitle = "Employee Onboarding",
+}: {
+  className?: string;
+  subtitle?: string;
+}) {
   return (
     <div className={cn("flex items-center gap-3", className)}>
       <PeakMark className="size-9 shrink-0" />
@@ -12,7 +19,7 @@ export function OrganicWordmark({ className }: { className?: string }) {
           Peak Process Partners
         </div>
         <div className="mt-0.5 truncate text-[0.6875rem] font-medium tracking-widest text-organic-ink-faint uppercase">
-          Employee Onboarding
+          {subtitle}
         </div>
       </div>
     </div>

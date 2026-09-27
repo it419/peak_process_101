@@ -25,7 +25,7 @@ export function OrganicCompletionScreen() {
           <Check className="size-7" strokeWidth={2.5} />
         </span>
 
-        <p className="mt-6 text-[0.8125rem] font-semibold tracking-widest text-organic-terracotta uppercase">
+        <p className="mt-6 text-[0.8125rem] font-semibold tracking-widest text-organic-accent-text uppercase">
           Peak Process Partners
         </p>
         <h1 className="font-organic-display mt-2 text-[2rem] leading-tight font-semibold text-organic-ink sm:text-[2.5rem]">
@@ -38,7 +38,7 @@ export function OrganicCompletionScreen() {
       <CurveDivider fill="var(--color-organic-surface)" className="-mt-px h-8 sm:h-12 md:h-16" />
 
       <div className="mx-auto mt-6 flex max-w-lg flex-col items-center text-center sm:mt-10">
-        <div className="w-full rounded-2xl border border-organic-border bg-white/70 p-5 text-left">
+        <div className="w-full rounded-2xl border border-organic-border bg-organic-card p-5 text-left">
           <p className="text-[0.6875rem] font-semibold tracking-widest text-organic-ink-faint uppercase">Next steps</p>
           <p className="mt-2 text-sm leading-relaxed text-organic-ink-muted">
             HR will review your information and reach out if anything else is required. You can expect to hear from
@@ -53,7 +53,7 @@ export function OrganicCompletionScreen() {
 
         <Link
           href="/dashboard"
-          className="mt-8 inline-flex h-12 items-center justify-center gap-2 rounded-full bg-organic-terracotta px-6 text-sm font-medium text-organic-bg transition-colors hover:bg-organic-terracotta-hover"
+          className="mt-8 inline-flex h-12 items-center justify-center gap-2 rounded-full bg-organic-accent px-6 text-sm font-medium text-organic-on-accent transition-colors hover:bg-organic-accent-hover"
         >
           Return to dashboard
         </Link>

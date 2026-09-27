@@ -4,14 +4,14 @@ import { ArrowRight, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils/cn";
 
 export const organicButtonVariants = cva(
-  "inline-flex items-center justify-center gap-2 rounded-full whitespace-nowrap font-medium transition-colors duration-150 outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-organic-terracotta disabled:cursor-not-allowed disabled:opacity-40",
+  "inline-flex items-center justify-center gap-2 rounded-organic-pill whitespace-nowrap font-medium transition-[color,background-color,border-color,scale] duration-150 ease-out outline-none active:scale-[0.97] motion-reduce:active:scale-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-organic-accent disabled:cursor-not-allowed disabled:opacity-40",
   {
     variants: {
       variant: {
-        primary: "bg-organic-terracotta text-organic-bg hover:bg-organic-terracotta-hover",
+        primary: "bg-organic-accent text-organic-on-accent hover:bg-organic-accent-hover",
         secondary:
-          "border border-organic-ink-faint/50 bg-transparent text-organic-ink hover:border-organic-terracotta hover:text-organic-terracotta",
-        ghost: "h-auto rounded-none px-0 text-organic-terracotta underline-offset-4 hover:underline",
+          "border border-organic-border-strong bg-transparent text-organic-ink hover:border-organic-accent hover:text-organic-accent-text",
+        ghost: "h-auto rounded-none px-0 text-organic-accent-text underline-offset-4 hover:underline",
       },
       size: {
         default: "h-12 px-6 text-sm",

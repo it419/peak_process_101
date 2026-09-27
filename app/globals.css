@@ -74,23 +74,96 @@
      Design 3 — Organic (Curved Editorial). Fraunces for display,
      Work Sans for body — distinct from both Design 1 and Design 2.
      ================================================================ */
+  /* Light ("day") values. Dark values override these same names further
+     down (see "Organic dark"), so components never branch on theme.
+     Text/background pairs are tuned to WCAG AA: >= 4.5:1 for text,
+     >= 3:1 for control boundaries (border-strong on card). */
   --color-organic-bg: #f7f2e9;
   --color-organic-surface: #efe7d8;
   --color-organic-surface-2: #e6dcc7;
-  --color-organic-border: #ded2b8;
+  --color-organic-card: #fdfbf7; /* cards, inputs, menus */
+  --color-organic-skeleton: #ebe2d0; /* loading placeholders, on card or surface */
+  --color-organic-border: #ded2b8; /* decorative dividers + card edges */
+  --color-organic-border-strong: #8f846f; /* input/control boundaries */
   --color-organic-ink: #2a2621;
-  --color-organic-ink-muted: #6b6255;
-  --color-organic-ink-faint: #9a917f;
+  --color-organic-ink-muted: #5f574b;
+  --color-organic-ink-faint: #6f6657;
   --color-organic-gold: #b8934a;
-  --color-organic-terracotta: #bc6a4a;
-  --color-organic-terracotta-hover: #a85a3c;
-  --color-organic-success: #4a7a5c;
+
+  /* The single accent. `accent` fills buttons/checked controls; `accent-text`
+     is the slightly deeper shade used for accent-coloured text and links. */
+  --color-organic-accent: #a95636;
+  --color-organic-accent-hover: #924629;
+  --color-organic-accent-text: #9d4f31;
+  --color-organic-on-accent: #fffaf3;
+  --color-organic-accent-tint: #f3e2d8;
+  /* Legacy aliases — kept so any not-yet-migrated class still resolves. */
+  --color-organic-terracotta: var(--color-organic-accent);
+  --color-organic-terracotta-hover: var(--color-organic-accent-hover);
+
+  --color-organic-success: #3f6e51;
   --color-organic-success-tint: #e6ebe1;
-  --color-organic-error: #a8483c;
+  --color-organic-error: #a1402f;
   --color-organic-error-tint: #f1e4df;
+
+  /* One radius per component family. */
+  --radius-organic-card: 1.5rem;
+  --radius-organic-control: 0.75rem;
+  --radius-organic-pill: 9999px;
+
+  /* One shadow style at two strengths (resting, lifted) plus menus. The
+     colour comes from --organic-shadow-rgb so dark mode can deepen it. */
+  --shadow-organic-rest: 0 1px 2px rgb(var(--organic-shadow-rgb) / calc(0.05 * var(--organic-shadow-k))), 0 1px 1px rgb(var(--organic-shadow-rgb) / calc(0.03 * var(--organic-shadow-k)));
+  --shadow-organic-lift: 0 14px 32px -14px rgb(var(--organic-shadow-rgb) / calc(0.22 * var(--organic-shadow-k))), 0 4px 10px -4px rgb(var(--organic-shadow-rgb) / calc(0.08 * var(--organic-shadow-k)));
+  --shadow-organic-menu: 0 18px 40px -12px rgb(var(--organic-shadow-rgb) / calc(0.28 * var(--organic-shadow-k))), 0 2px 6px rgb(var(--organic-shadow-rgb) / calc(0.08 * var(--organic-shadow-k)));
 
   --font-organic-display: var(--font-fraunces), Georgia, serif;
   --font-organic-sans: var(--font-work-sans), system-ui, sans-serif;
+  --font-organic-ui: var(--font-geist), system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+
+:root {
+  --organic-shadow-rgb: 42 38 33;
+  --organic-shadow-k: 1;
+}
+
+/* ================================================================
+   Organic dark. Same component structure, only token values change.
+   Scoped to pages that opt in with a `data-organic-surface` element
+   (currently the careers pages), so the Organic onboarding flow is
+   untouched until it opts in too. `data-organic-theme` is set on <html>
+   before first paint by the inline script in app/layout.tsx.
+   ================================================================ */
+:root[data-organic-theme="dark"]:has([data-organic-surface]) {
+  color-scheme: dark;
+  --color-organic-bg: #16130f;
+  --color-organic-surface: #221d17;
+  --color-organic-surface-2: #29241d;
+  --color-organic-card: #26211a;
+  --color-organic-skeleton: #38322a;
+  --color-organic-border: #3a332a;
+  --color-organic-border-strong: #807665;
+  --color-organic-ink: #f2ebdf;
+  --color-organic-ink-muted: #bdb2a1;
+  --color-organic-ink-faint: #9a8f7d;
+  --color-organic-gold: #d1ad63;
+  --color-organic-accent: #e2906c;
+  --color-organic-accent-hover: #eba385;
+  --color-organic-accent-text: #e8987a;
+  --color-organic-on-accent: #1a120c;
+  --color-organic-accent-tint: #3a2419;
+  --color-organic-success: #8cc2a0;
+  --color-organic-success-tint: #1b2a21;
+  --color-organic-error: #ec8a7c;
+  --color-organic-error-tint: #2e1a17;
+  --organic-shadow-rgb: 0 0 0;
+  --organic-shadow-k: 2.2;
+}
+
+/* Careers pages paint the whole canvas (overscroll included) in the
+   Organic background, in either theme. */
+body:has([data-organic-surface]) {
+  background: var(--color-organic-bg);
 }
 
 html {
@@ -126,4 +199,201 @@ body {
 .focus-ring:focus-visible {
   outline: 2px solid var(--color-ember-600);
   outline-offset: 2px;
+}
+
+/* ================================================================
+   Organic type scale (careers). One dominant page title in Fraunces;
+   everything else in Geist. Colour is applied separately so each step
+   works on any surface.
+   ================================================================ */
+@utility organic-type-display {
+  font-family: var(--font-organic-display);
+  font-weight: 600;
+  font-size: clamp(2.375rem, 1.55rem + 3.3vw, 3.5rem);
+  line-height: 1.08;
+  letter-spacing: -0.02em;
+  text-wrap: balance;
+}
+
+@utility organic-type-title {
+  font-family: var(--font-organic-display);
+  font-weight: 600;
+  font-size: clamp(2rem, 1.45rem + 2.2vw, 2.75rem);
+  line-height: 1.12;
+  letter-spacing: -0.015em;
+  text-wrap: balance;
+}
+
+@utility organic-type-heading {
+  font-family: var(--font-organic-ui);
+  font-weight: 600;
+  font-size: 1.125rem;
+  line-height: 1.4;
+  letter-spacing: -0.01em;
+}
+
+@utility organic-type-card-title {
+  font-family: var(--font-organic-ui);
+  font-weight: 600;
+  font-size: 1.1875rem;
+  line-height: 1.35;
+  letter-spacing: -0.012em;
+  text-wrap: balance;
+}
+
+@utility organic-type-lead {
+  font-size: 1.0625rem;
+  line-height: 1.65;
+  @media (width >= 40rem) {
+    font-size: 1.125rem;
+  }
+}
+
+@utility organic-type-body {
+  font-size: 0.9375rem;
+  line-height: 1.7;
+}
+
+@utility organic-type-meta {
+  font-size: 0.8125rem;
+  font-weight: 500;
+  line-height: 1.5;
+}
+
+@utility organic-type-eyebrow {
+  font-size: 0.75rem;
+  font-weight: 600;
+  line-height: 1.4;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+/* ================================================================
+   Organic careers route transitions (React <ViewTransition>, see
+   OrganicCareersFrame). Forward = deeper into list → detail → apply.
+   Short, small offsets: this should read as continuity, not motion.
+   ================================================================ */
+::view-transition {
+  pointer-events: none;
+}
+
+::view-transition-group(organic-careers-header) {
+  animation: none;
+  z-index: 100;
+}
+::view-transition-old(organic-careers-header) {
+  display: none;
+}
+::view-transition-new(organic-careers-header) {
+  animation: none;
+}
+
+::view-transition-old(.organic-nav-forward) {
+  --organic-slide: -24px;
+  animation:
+    140ms ease-in both organic-fade reverse,
+    280ms cubic-bezier(0.4, 0, 0.2, 1) both organic-slide reverse;
+}
+::view-transition-new(.organic-nav-forward) {
+  --organic-slide: 24px;
+  animation:
+    200ms ease-out 100ms both organic-fade,
+    320ms cubic-bezier(0.22, 1, 0.36, 1) both organic-slide;
+}
+::view-transition-old(.organic-nav-back) {
+  --organic-slide: 24px;
+  animation:
+    140ms ease-in both organic-fade reverse,
+    280ms cubic-bezier(0.4, 0, 0.2, 1) both organic-slide reverse;
+}
+::view-transition-new(.organic-nav-back) {
+  --organic-slide: -24px;
+  animation:
+    200ms ease-out 100ms both organic-fade,
+    320ms cubic-bezier(0.22, 1, 0.36, 1) both organic-slide;
+}
+
+@keyframes organic-fade {
+  from {
+    opacity: 0;
+  }
+}
+@keyframes organic-slide {
+  from {
+    translate: var(--organic-slide) 0;
+  }
+  to {
+    translate: 0 0;
+  }
+}
+
+/* Reduced motion: keep a quick crossfade, drop all movement. */
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation-name: organic-fade !important;
+    animation-duration: 120ms !important;
+    animation-delay: 0s !important;
+  }
+  ::view-transition-old(*) {
+    animation-direction: reverse !important;
+  }
+  /* The pinned header never animates. */
+  ::view-transition-new(organic-careers-header) {
+    animation: none !important;
+  }
+}
+
+/* ================================================================
+   Organic loading skeletons: a soft surface block with a slow sheen.
+   ================================================================ */
+.organic-skeleton {
+  position: relative;
+  overflow: hidden;
+  background: var(--color-organic-skeleton);
+}
+.organic-skeleton::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  translate: -100% 0;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    color-mix(in oklab, var(--color-organic-card) 55%, transparent),
+    transparent
+  );
+  animation: organic-shimmer 1.6s ease-in-out infinite;
+}
+@keyframes organic-shimmer {
+  to {
+    translate: 100% 0;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .organic-skeleton::after {
+    animation: none;
+    display: none;
+  }
+}
+
+/* Skeleton -> content hand-off (and untyped navigations such as the
+   browser back button): the placeholder leaves quickly, the page arrives
+   with a short fade and a small upward settle. */
+::view-transition-old(.organic-reveal-out) {
+  animation: 120ms ease-out both organic-fade reverse;
+}
+::view-transition-new(.organic-reveal-in) {
+  --organic-rise: 8px;
+  animation:
+    220ms ease-out 80ms both organic-fade,
+    320ms cubic-bezier(0.22, 1, 0.36, 1) both organic-rise;
+}
+@keyframes organic-rise {
+  from {
+    translate: 0 var(--organic-rise);
+  }
+  to {
+    translate: 0 0;
+  }
 }

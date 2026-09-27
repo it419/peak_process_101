@@ -17,7 +17,7 @@ const STATUS_LABEL: Record<StepStatus, string> = {
 
 const STATUS_TEXT_TONE: Record<StepStatus, string> = {
   completed: "text-organic-success",
-  current: "text-organic-terracotta",
+  current: "text-organic-accent-text",
   blocked: "text-organic-gold",
   upcoming: "text-organic-ink-faint",
 };
@@ -46,9 +46,9 @@ export function OrganicStepTimeline({ variant = "list", className }: OrganicStep
                 title={step.shortLabel}
                 className={cn(
                   "flex size-6 shrink-0 items-center justify-center rounded-full border text-[10px] font-semibold transition-colors sm:size-7 sm:text-[11px]",
-                  status === "completed" && "border-organic-terracotta bg-organic-terracotta text-organic-bg",
+                  status === "completed" && "border-organic-accent bg-organic-accent text-organic-on-accent",
                   status === "current" &&
-                    "border-organic-terracotta bg-organic-bg text-organic-terracotta ring-2 ring-organic-terracotta/25",
+                    "border-organic-accent bg-organic-bg text-organic-accent-text ring-2 ring-organic-accent/25",
                   status === "blocked" && "border-organic-gold/70 bg-organic-bg text-organic-gold",
                   status === "upcoming" && "border-organic-border bg-organic-bg text-organic-ink-faint",
                 )}
@@ -60,7 +60,7 @@ export function OrganicStepTimeline({ variant = "list", className }: OrganicStep
                   aria-hidden
                   className={cn(
                     "h-px flex-1",
-                    status === "completed" ? "bg-organic-terracotta/40" : "bg-organic-border",
+                    status === "completed" ? "bg-organic-accent/40" : "bg-organic-border",
                   )}
                 />
               )}
@@ -89,11 +89,11 @@ export function OrganicStepTimeline({ variant = "list", className }: OrganicStep
             <span
               className={cn(
                 "flex size-8 shrink-0 items-center justify-center rounded-full border text-[13px] font-semibold",
-                status === "completed" && "border-organic-terracotta bg-organic-terracotta text-organic-bg",
+                status === "completed" && "border-organic-accent bg-organic-accent text-organic-on-accent",
                 status === "current" &&
-                  "border-organic-terracotta bg-white text-organic-terracotta ring-2 ring-organic-terracotta/20",
-                status === "blocked" && "border-organic-gold/60 bg-white text-organic-gold",
-                status === "upcoming" && "border-organic-border bg-white text-organic-ink-faint",
+                  "border-organic-accent bg-organic-card text-organic-accent-text ring-2 ring-organic-accent/20",
+                status === "blocked" && "border-organic-gold/60 bg-organic-card text-organic-gold",
+                status === "upcoming" && "border-organic-border bg-organic-card text-organic-ink-faint",
               )}
             >
               {status === "completed" ? <Check className="size-3.5" strokeWidth={3} /> : index + 1}

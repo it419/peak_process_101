@@ -26,7 +26,7 @@ function statusVisual(status: DocumentMeta["status"] | "pending"): { bg: string;
     case "error":
       return { bg: "bg-organic-error-tint text-organic-error", icon: <TriangleAlert className="size-4" /> };
     case "uploading":
-      return { bg: "bg-organic-terracotta/15 text-organic-terracotta", icon: <Upload className="size-4" /> };
+      return { bg: "bg-organic-accent/15 text-organic-accent-text", icon: <Upload className="size-4" /> };
     default:
       return { bg: "bg-organic-surface-2 text-organic-ink-faint", icon: <FileText className="size-4" /> };
   }
@@ -67,7 +67,7 @@ export function OrganicDocumentUploadRow({ requirement, meta, progress, onUpload
           {status === "uploading" && (
             <div className="mt-2.5 h-1 max-w-56 overflow-hidden rounded-full bg-organic-surface-2">
               <div
-                className="h-full rounded-full bg-organic-terracotta transition-[width] duration-300"
+                className="h-full rounded-full bg-organic-accent transition-[width] duration-300"
                 style={{ width: `${progress ?? 0}%` }}
               />
             </div>
@@ -98,7 +98,7 @@ export function OrganicDocumentUploadRow({ requirement, meta, progress, onUpload
             </OrganicButton>
           </>
         ) : status === "uploading" ? (
-          <span className="text-[0.8125rem] font-medium text-organic-terracotta">Uploading{"…"}</span>
+          <span className="text-[0.8125rem] font-medium text-organic-accent-text">Uploading{"…"}</span>
         ) : status === "error" ? (
           <OrganicButton type="button" variant="secondary" size="sm" onClick={() => inputRef.current?.click()}>
             <RotateCw className="size-4" /> Retry

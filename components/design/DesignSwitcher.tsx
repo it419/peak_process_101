@@ -1,6 +1,8 @@
 "use client";
 
+import { usePathname } from "next/navigation";
 import { ChevronDown, Sparkles } from "lucide-react";
+import { cn } from "@/lib/utils/cn";
 import { DESIGN_MODE_OPTIONS, useDesignStore, type DesignMode } from "@/lib/design/designStore";
 
 /**
@@ -9,13 +11,24 @@ import { DESIGN_MODE_OPTIONS, useDesignStore, type DesignMode } from "@/lib/desi
  * its own self-contained dark chip (not themed to whichever design is
  * currently active) so it stays legible over the light paper canvas, the
  * near-black Dark design, and the ivory Organic design alike.
+ *
+ * On the careers and admin sites it sits bottom-left so it doesn't cover
+ * their header controls (theme toggle, sign out). Onboarding keeps it
+ * top-right because its mobile layout has a sticky bottom action bar.
  */
 export function DesignSwitcher() {
   const mode = useDesignStore((s) => s.mode);
   const setMode = useDesignStore((s) => s.setMode);
+  const pathname = usePathname();
+  const bottomLeft = pathname.startsWith("/jobs") || pathname.startsWith("/admin");
 
   return (
-    <div className="fixed top-3 right-3 z-[100] tablet:top-4 tablet:right-4">
+    <div
+      className={cn(
+        "fixed z-[100]",
+        bottomLeft ? "bottom-3 left-3 tablet:bottom-4 tablet:left-4" : "top-3 right-3 tablet:top-4 tablet:right-4",
+      )}
+    >
       <label className="flex items-center gap-2 rounded-full border border-white/10 bg-[#111114]/95 py-1.5 pr-2 pl-3 shadow-[0_4px_16px_rgba(0,0,0,0.35)] backdrop-blur-sm">
         <Sparkles className="hidden size-3.5 shrink-0 text-white/40 tablet:block" aria-hidden />
         <span className="hidden text-[0.6875rem] font-medium tracking-wide text-white/50 tablet:inline">

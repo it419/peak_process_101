@@ -29,7 +29,7 @@ export function OrganicShell({ children }: { children: ReactNode }) {
             <p className="text-[0.6875rem] font-semibold tracking-widest text-organic-ink-faint uppercase">
               Onboarding
             </p>
-            <p className="font-organic-display text-lg leading-tight font-semibold text-organic-terracotta">
+            <p className="font-organic-display text-lg leading-tight font-semibold text-organic-accent-text">
               {percent}% Complete
             </p>
           </div>

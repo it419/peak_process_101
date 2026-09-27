@@ -38,7 +38,7 @@ function SkillChipInput({ label, skills, onAdd, onRemove }: SkillChipInputProps)
           {skills.map((skill, index) => (
             <span
               key={skill}
-              className="inline-flex items-center gap-1.5 rounded-full border border-organic-border bg-white/70 px-3 py-1 text-sm text-organic-ink"
+              className="inline-flex items-center gap-1.5 rounded-full border border-organic-border bg-organic-card px-3 py-1 text-sm text-organic-ink"
             >
               {skill}
               <button
@@ -58,7 +58,7 @@ function SkillChipInput({ label, skills, onAdd, onRemove }: SkillChipInputProps)
         onChange={(e) => setValue(e.target.value)}
         onKeyDown={handleKeyDown}
         placeholder="Type a skill and press Enter"
-        className="h-12 rounded-xl border border-organic-border bg-white/70 px-4 text-[0.9375rem] text-organic-ink placeholder:text-organic-ink-faint outline-none focus:border-organic-terracotta"
+        className="h-12 rounded-xl border border-organic-border bg-organic-card px-4 text-[0.9375rem] text-organic-ink placeholder:text-organic-ink-faint outline-none focus:border-organic-accent"
       />
     </div>
   );

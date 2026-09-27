@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
-import { fraunces, ibmPlexSans, lora, spaceGrotesk, workSans } from "./fonts";
+import { fraunces, geist, ibmPlexSans, lora, spaceGrotesk, workSans } from "./fonts";
 import { OnboardingHydrator } from "@/lib/store/OnboardingHydrator";
 import { DesignSwitcher } from "@/components/design/DesignSwitcher";
+import { organicThemeInitScript } from "@/lib/design/organicThemeScript";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -14,8 +15,13 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="en"
-      className={`${lora.variable} ${ibmPlexSans.variable} ${spaceGrotesk.variable} ${fraunces.variable} ${workSans.variable}`}
+      className={`${lora.variable} ${ibmPlexSans.variable} ${spaceGrotesk.variable} ${fraunces.variable} ${workSans.variable} ${geist.variable}`}
+      // The inline script below sets data-organic-theme before hydration.
+      suppressHydrationWarning
     >
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: organicThemeInitScript }} />
+      </head>
       <body className="min-h-screen antialiased">
         <OnboardingHydrator />
         <DesignSwitcher />
