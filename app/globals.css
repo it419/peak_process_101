@@ -118,6 +118,7 @@
 
   --font-organic-display: var(--font-fraunces), Georgia, serif;
   --font-organic-sans: var(--font-work-sans), system-ui, sans-serif;
+  --font-organic-ui: var(--font-geist), system-ui, -apple-system, "Segoe UI", sans-serif;
 }
 
 :root {
@@ -196,4 +197,71 @@ body {
 .focus-ring:focus-visible {
   outline: 2px solid var(--color-ember-600);
   outline-offset: 2px;
+}
+
+/* ================================================================
+   Organic type scale (careers). One dominant page title in Fraunces;
+   everything else in Geist. Colour is applied separately so each step
+   works on any surface.
+   ================================================================ */
+@utility organic-type-display {
+  font-family: var(--font-organic-display);
+  font-weight: 600;
+  font-size: clamp(2.375rem, 1.55rem + 3.3vw, 3.5rem);
+  line-height: 1.08;
+  letter-spacing: -0.02em;
+  text-wrap: balance;
+}
+
+@utility organic-type-title {
+  font-family: var(--font-organic-display);
+  font-weight: 600;
+  font-size: clamp(2rem, 1.45rem + 2.2vw, 2.75rem);
+  line-height: 1.12;
+  letter-spacing: -0.015em;
+  text-wrap: balance;
+}
+
+@utility organic-type-heading {
+  font-family: var(--font-organic-ui);
+  font-weight: 600;
+  font-size: 1.125rem;
+  line-height: 1.4;
+  letter-spacing: -0.01em;
+}
+
+@utility organic-type-card-title {
+  font-family: var(--font-organic-ui);
+  font-weight: 600;
+  font-size: 1.1875rem;
+  line-height: 1.35;
+  letter-spacing: -0.012em;
+  text-wrap: balance;
+}
+
+@utility organic-type-lead {
+  font-size: 1.0625rem;
+  line-height: 1.65;
+  @media (width >= 40rem) {
+    font-size: 1.125rem;
+  }
+}
+
+@utility organic-type-body {
+  font-size: 0.9375rem;
+  line-height: 1.7;
+}
+
+@utility organic-type-meta {
+  font-size: 0.8125rem;
+  font-weight: 500;
+  line-height: 1.5;
+}
+
+@utility organic-type-eyebrow {
+  font-size: 0.75rem;
+  font-weight: 600;
+  line-height: 1.4;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
 }
