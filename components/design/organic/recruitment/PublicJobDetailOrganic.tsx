@@ -1,59 +1,37 @@
 import Link from "next/link";
-import { Banknote, Briefcase, Clock, MapPin, TrendingUp } from "lucide-react";
+import type { ReactNode } from "react";
 import { OrganicCareersFrame } from "@/components/design/organic/recruitment/OrganicCareersFrame";
+import {
+  BackLink,
+  CareersHero,
+  JobMetaChips,
+  JobSummaryCard,
+  careersContainer,
+  formatSalary,
+} from "@/components/design/organic/recruitment/careersUi";
 import { CurveDivider } from "@/components/design/organic/CurveDivider";
 import { organicButtonVariants } from "@/components/design/organic/ui/OrganicButton";
-import { employmentTypeLabel, workModeLabel } from "@/lib/recruitment/constants";
 import type { PublicJobDetail } from "@/types/recruitment";
 
-function experienceRange(min: number | null, max: number | null): string | null {
-  if (min == null && max == null) return null;
-  if (min != null && max != null) return `${min}–${max} Years`;
-  if (min != null) return `${min}+ Years`;
-  return `Up to ${max} Years`;
-}
-
-function formatSalary(min: number | null, max: number | null): string | null {
-  if (min == null && max == null) return null;
-  const fmt = (n: number) => `₹${n.toLocaleString("en-IN")}`;
-  if (min != null && max != null) return `${fmt(min)} – ${fmt(max)}`;
-  if (min != null) return `${fmt(min)}+`;
-  return `Up to ${fmt(max as number)}`;
-}
-
-function Pill({ icon: Icon, children }: { icon: typeof MapPin; children: React.ReactNode }) {
+function Section({ title, children }: { title: string; children: ReactNode }) {
   return (
-    <span className="inline-flex items-center gap-1.5 rounded-full border border-organic-border bg-organic-card px-3 py-1 text-xs font-medium text-organic-ink-muted">
-      <Icon className="size-3.5" aria-hidden />
-      {children}
-    </span>
+    <section className="py-10 first:pt-0 last:pb-0">
+      <h2 className="organic-type-heading text-organic-ink">{title}</h2>
+      <div className="mt-4">{children}</div>
+    </section>
   );
 }
 
-function FactRow({ icon: Icon, label, value }: { icon: typeof MapPin; label: string; value: string }) {
-  return (
-    <div className="flex items-start gap-2.5">
-      <Icon className="mt-0.5 size-4 shrink-0 text-organic-ink-faint" aria-hidden />
-      <div className="min-w-0">
-        <p className="text-xs text-organic-ink-faint">{label}</p>
-        <p className="text-sm font-medium text-organic-ink">{value}</p>
-      </div>
-    </div>
-  );
-}
-
-function BulletList({ text }: { text: string | null }) {
-  if (!text) return null;
+function BulletList({ text }: { text: string }) {
   const items = text
     .split("\n")
     .map((l) => l.trim())
     .filter(Boolean);
-  if (items.length === 0) return null;
   return (
-    <ul className="mt-3 space-y-2">
+    <ul className="flex flex-col gap-3">
       {items.map((item) => (
-        <li key={item} className="flex gap-2.5 text-[0.9375rem] leading-relaxed text-organic-ink-muted">
-          <span className="mt-2 size-1 shrink-0 rounded-full bg-organic-accent" aria-hidden />
+        <li key={item} className="organic-type-body flex gap-3 text-organic-ink-muted">
+          <span className="mt-[0.7em] size-1.5 shrink-0 rounded-full bg-organic-accent" aria-hidden />
           {item}
         </li>
       ))}
@@ -61,124 +39,111 @@ function BulletList({ text }: { text: string | null }) {
   );
 }
 
+function hasItems(text: string | null): text is string {
+  return Boolean(text && text.split("\n").some((l) => l.trim()));
+}
+
+function SkillList({ label, skills, emphasis }: { label: string; skills: string[]; emphasis: boolean }) {
+  return (
+    <div>
+      <p className="organic-type-eyebrow text-organic-ink-faint">{label}</p>
+      <ul className="mt-3 flex flex-wrap gap-2">
+        {skills.map((s) => (
+          <li
+            key={s}
+            className={
+              emphasis
+                ? "organic-type-meta rounded-organic-pill border border-organic-border-strong/60 bg-organic-card px-3 py-1 text-organic-ink"
+                : "organic-type-meta rounded-organic-pill border border-organic-border px-3 py-1 text-organic-ink-muted"
+            }
+          >
+            {s}
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
 export function PublicJobDetailOrganic({ job }: { job: PublicJobDetail }) {
-  const experience = experienceRange(job.experienceMinYears, job.experienceMaxYears);
   const salary = formatSalary(job.salaryMin, job.salaryMax);
+  const hasSkills = job.requiredSkills.length > 0 || job.preferredSkills.length > 0;
 
   return (
     <OrganicCareersFrame>
-
-      <div className="bg-organic-surface px-5 py-14 sm:px-10 sm:py-16">
-        <div className="mx-auto max-w-6xl">
-          <Link href="/jobs" className="text-sm font-medium text-organic-ink-muted hover:text-organic-ink">
-            ← All positions
-          </Link>
-          <h1 className="font-organic-display mt-4 text-[2.25rem] leading-[1.1] font-semibold text-organic-ink sm:text-[2.75rem]">
-            {job.title}
-          </h1>
-          {job.department && <p className="mt-2 text-sm font-medium text-organic-accent-text">{job.department}</p>}
-          <div className="mt-5 flex flex-wrap gap-2">
-            {job.location && <Pill icon={MapPin}>{job.location}</Pill>}
-            <Pill icon={Briefcase}>{employmentTypeLabel(job.employmentType)}</Pill>
-            <Pill icon={Clock}>{workModeLabel(job.workMode)}</Pill>
-            {experience && <Pill icon={TrendingUp}>{experience}</Pill>}
-            {salary && <Pill icon={Banknote}>{salary}</Pill>}
-          </div>
-        </div>
-      </div>
+      <CareersHero>
+        <BackLink href="/jobs">All positions</BackLink>
+        {job.department && <p className="organic-type-eyebrow mt-8 text-organic-accent-text">{job.department}</p>}
+        <h1 className={`organic-type-title max-w-4xl text-organic-ink ${job.department ? "mt-3" : "mt-8"}`}>
+          {job.title}
+        </h1>
+        <JobMetaChips job={job} salary={salary} className="mt-7" />
+      </CareersHero>
       <CurveDivider fill="var(--color-organic-surface)" className="-mt-px h-8 sm:h-12 md:h-16" />
 
-      <div className="mx-auto max-w-6xl px-5 py-10 sm:px-10">
-        <div className="grid grid-cols-1 gap-10 lg:grid-cols-[1fr_320px] lg:items-start">
+      <main className={`${careersContainer} pt-10 pb-20 sm:pt-14 sm:pb-28`}>
+        <div className="grid grid-cols-1 gap-12 lg:grid-cols-[minmax(0,1fr)_340px] lg:items-start lg:gap-16">
           <div className="min-w-0">
-            <Link href={`/jobs/${job.id}/apply`} className={`${organicButtonVariants({ variant: "primary" })} lg:hidden`}>
-              Apply Now
+            <Link
+              href={`/jobs/${job.id}/apply`}
+              className={`${organicButtonVariants({ variant: "primary" })} mb-10 w-full lg:hidden`}
+            >
+              Apply now
             </Link>
 
-            {job.overview && (
-              <section className="mt-2 lg:mt-0">
-                <h2 className="font-organic-display text-lg font-semibold text-organic-ink">Overview</h2>
-                <p className="mt-3 text-[0.9375rem] leading-relaxed text-organic-ink-muted">{job.overview}</p>
-              </section>
-            )}
-            {job.responsibilities && (
-              <section className="mt-8 border-t border-organic-border pt-8">
-                <h2 className="font-organic-display text-lg font-semibold text-organic-ink">Responsibilities</h2>
-                <BulletList text={job.responsibilities} />
-              </section>
-            )}
-            {job.requirements && (
-              <section className="mt-8 border-t border-organic-border pt-8">
-                <h2 className="font-organic-display text-lg font-semibold text-organic-ink">Requirements</h2>
-                <BulletList text={job.requirements} />
-              </section>
-            )}
-            {(job.requiredSkills.length > 0 || job.preferredSkills.length > 0) && (
-              <section className="mt-8 border-t border-organic-border pt-8">
-                <h2 className="font-organic-display text-lg font-semibold text-organic-ink">Skills</h2>
-                {job.requiredSkills.length > 0 && (
-                  <div className="mt-3">
-                    <p className="text-xs font-medium tracking-wide text-organic-ink-faint uppercase">Required</p>
-                    <div className="mt-2 flex flex-wrap gap-2">
-                      {job.requiredSkills.map((s) => (
-                        <span key={s} className="rounded-full border border-organic-border bg-organic-card px-3 py-1 text-sm text-organic-ink">
-                          {s}
-                        </span>
-                      ))}
-                    </div>
+            <div className="flex max-w-[68ch] flex-col divide-y divide-organic-border">
+              {job.overview && (
+                <Section title="Overview">
+                  <p className="organic-type-body whitespace-pre-line text-organic-ink-muted">{job.overview}</p>
+                </Section>
+              )}
+              {hasItems(job.responsibilities) && (
+                <Section title="Responsibilities">
+                  <BulletList text={job.responsibilities} />
+                </Section>
+              )}
+              {hasItems(job.requirements) && (
+                <Section title="Requirements">
+                  <BulletList text={job.requirements} />
+                </Section>
+              )}
+              {hasSkills && (
+                <Section title="Skills">
+                  <div className="flex flex-col gap-6">
+                    {job.requiredSkills.length > 0 && (
+                      <SkillList label="Required" skills={job.requiredSkills} emphasis />
+                    )}
+                    {job.preferredSkills.length > 0 && (
+                      <SkillList label="Preferred" skills={job.preferredSkills} emphasis={false} />
+                    )}
                   </div>
-                )}
-                {job.preferredSkills.length > 0 && (
-                  <div className="mt-4">
-                    <p className="text-xs font-medium tracking-wide text-organic-ink-faint uppercase">Preferred</p>
-                    <div className="mt-2 flex flex-wrap gap-2">
-                      {job.preferredSkills.map((s) => (
-                        <span key={s} className="rounded-full border border-organic-border px-3 py-1 text-sm text-organic-ink-muted">
-                          {s}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                )}
-              </section>
-            )}
-            {job.education && (
-              <section className="mt-8 border-t border-organic-border pt-8">
-                <h2 className="font-organic-display text-lg font-semibold text-organic-ink">Education</h2>
-                <p className="mt-3 text-[0.9375rem] text-organic-ink-muted">{job.education}</p>
-              </section>
-            )}
-            {job.benefits && (
-              <section className="mt-8 border-t border-organic-border pt-8">
-                <h2 className="font-organic-display text-lg font-semibold text-organic-ink">Benefits</h2>
-                <BulletList text={job.benefits} />
-              </section>
-            )}
+                </Section>
+              )}
+              {job.education && (
+                <Section title="Education">
+                  <p className="organic-type-body text-organic-ink-muted">{job.education}</p>
+                </Section>
+              )}
+              {hasItems(job.benefits) && (
+                <Section title="Benefits">
+                  <BulletList text={job.benefits} />
+                </Section>
+              )}
+            </div>
           </div>
 
           <aside className="lg:sticky lg:top-10">
-            <div className="rounded-organic-card border border-organic-border bg-organic-card p-6 shadow-organic-rest">
-              <p className="text-xs font-medium tracking-wide text-organic-ink-faint uppercase">You{"’"}re applying for</p>
-              <p className="mt-1.5 font-organic-display text-lg font-semibold text-organic-ink">{job.title}</p>
-
-              <div className="mt-5 flex flex-col gap-4">
-                {job.location && <FactRow icon={MapPin} label="Location" value={job.location} />}
-                <FactRow icon={Briefcase} label="Employment type" value={employmentTypeLabel(job.employmentType)} />
-                <FactRow icon={Clock} label="Work mode" value={workModeLabel(job.workMode)} />
-                {experience && <FactRow icon={TrendingUp} label="Experience" value={experience} />}
-                {salary && <FactRow icon={Banknote} label="Salary" value={salary} />}
-              </div>
-
+            <JobSummaryCard eyebrow={"You’re applying for"} job={job} salary={salary}>
               <Link
                 href={`/jobs/${job.id}/apply`}
-                className={`${organicButtonVariants({ variant: "primary" })} mt-6 w-full justify-center`}
+                className={`${organicButtonVariants({ variant: "primary" })} mt-7 w-full`}
               >
-                Apply Now
+                Apply now
               </Link>
-            </div>
+            </JobSummaryCard>
           </aside>
         </div>
-      </div>
+      </main>
     </OrganicCareersFrame>
   );
 }

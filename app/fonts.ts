@@ -1,4 +1,4 @@
-import { Fraunces, IBM_Plex_Sans, Lora, Space_Grotesk, Work_Sans } from "next/font/google";
+import { Fraunces, Geist, IBM_Plex_Sans, Lora, Space_Grotesk, Work_Sans } from "next/font/google";
 
 // Design 1 (current)
 export const lora = Lora({
@@ -38,5 +38,14 @@ export const workSans = Work_Sans({
   subsets: ["latin"],
   weight: ["400", "500", "600"],
   variable: "--font-work-sans",
+  display: "swap",
+});
+
+// Organic careers UI text (headings below page titles, cards, controls, body).
+// Fraunces stays for page-level titles only.
+export const geist = Geist({
+  subsets: ["latin"],
+  weight: ["400", "500", "600"],
+  variable: "--font-geist",
   display: "swap",
 });
