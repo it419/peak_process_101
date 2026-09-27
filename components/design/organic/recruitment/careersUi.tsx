@@ -11,6 +11,16 @@ import type { PublicJobSummary } from "@/types/recruitment";
 /** One content column for header, hero, body and footer so their edges line up. */
 export const careersContainer = "mx-auto w-full max-w-6xl px-5 sm:px-10";
 
+/** Navigation direction tags for <Link transitionTypes> (styled in
+ *  globals.css). Deeper into the flow (list → detail → apply) is forward;
+ *  returning is back. */
+export const NAV_FORWARD = ["organic-nav-forward"];
+export const NAV_BACK = ["organic-nav-back"];
+
+/** Shared look for the jobs search box and filter dropdowns (same height, radius, border). */
+export const filterControlClass =
+  "h-11 w-full rounded-organic-pill border border-organic-border-strong bg-organic-card text-sm text-organic-ink outline-none transition-[border-color,box-shadow] duration-150 hover:border-organic-ink-muted focus-visible:border-organic-accent focus-visible:ring-3 focus-visible:ring-organic-accent/20";
+
 export function experienceRange(min: number | null, max: number | null): string | null {
   if (min == null && max == null) return null;
   if (min != null && max != null) return `${min}–${max} Years`;
@@ -123,6 +133,7 @@ export function BackLink({ href, children }: { href: string; children: ReactNode
   return (
     <Link
       href={href}
+      transitionTypes={NAV_BACK}
       className="organic-type-meta group inline-flex max-w-full items-center gap-1.5 rounded-organic-control text-organic-ink-muted transition-colors hover:text-organic-ink focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-organic-accent"
     >
       <ArrowLeft className="size-4 shrink-0 transition-transform duration-150 group-hover:-translate-x-0.5" aria-hidden />

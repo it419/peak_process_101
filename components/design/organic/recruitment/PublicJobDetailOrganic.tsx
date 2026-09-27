@@ -6,6 +6,7 @@ import {
   CareersHero,
   JobMetaChips,
   JobSummaryCard,
+  NAV_FORWARD,
   careersContainer,
   formatSalary,
 } from "@/components/design/organic/recruitment/careersUi";
@@ -86,6 +87,7 @@ export function PublicJobDetailOrganic({ job }: { job: PublicJobDetail }) {
           <div className="min-w-0">
             <Link
               href={`/jobs/${job.id}/apply`}
+              transitionTypes={NAV_FORWARD}
               className={`${organicButtonVariants({ variant: "primary" })} mb-10 w-full lg:hidden`}
             >
               Apply now
@@ -136,6 +138,7 @@ export function PublicJobDetailOrganic({ job }: { job: PublicJobDetail }) {
             <JobSummaryCard eyebrow={"You’re applying for"} job={job} salary={salary}>
               <Link
                 href={`/jobs/${job.id}/apply`}
+              transitionTypes={NAV_FORWARD}
                 className={`${organicButtonVariants({ variant: "primary" })} mt-7 w-full`}
               >
                 Apply now
