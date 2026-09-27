@@ -157,3 +157,21 @@ export function CareersHero({ children, size = "default" }: { children: ReactNod
     </div>
   );
 }
+
+/** Hero for the jobs list. Static copy, shared with the loading skeleton so
+ *  the page doesn't shift when the real list arrives.
+ *  Placeholder marketing copy: replace with approved wording. */
+export function JobsHero() {
+  return (
+    <CareersHero size="large">
+      <div className="max-w-2xl">
+        <p className="organic-type-eyebrow text-organic-accent-text">Open positions</p>
+        <h1 className="organic-type-display mt-5 text-organic-ink">Find work that moves people forward.</h1>
+        <p className="organic-type-lead mt-6 max-w-xl text-organic-ink-muted">
+          Join a team redefining operational excellence — explore open roles across engineering, operations, and
+          beyond.
+        </p>
+      </div>
+    </CareersHero>
+  );
+}

@@ -1,20 +1,20 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { AnimatePresence, MotionConfig, motion, useReducedMotion, type Variants } from "framer-motion";
-import { Search } from "lucide-react";
+import { BriefcaseBusiness, RotateCcw, Search, SearchX } from "lucide-react";
 import { OrganicCareersFrame } from "@/components/design/organic/recruitment/OrganicCareersFrame";
 import {
-  CareersHero,
   JobMetaChips,
+  JobsHero,
   NAV_FORWARD,
   careersContainer,
   filterControlClass,
 } from "@/components/design/organic/recruitment/careersUi";
 import { OrganicFilterSelect } from "@/components/design/organic/ui/OrganicFilterSelect";
 import { CurveDivider } from "@/components/design/organic/CurveDivider";
-import { organicButtonVariants } from "@/components/design/organic/ui/OrganicButton";
+import { OrganicButton, organicButtonVariants } from "@/components/design/organic/ui/OrganicButton";
 import type { PublicJobSummary } from "@/types/recruitment";
 
 const EASE_OUT = [0.22, 1, 0.36, 1] as const;
@@ -90,6 +90,34 @@ function JobCard({ job, delay }: { job: PublicJobSummary; delay: number }) {
   );
 }
 
+function EmptyState({
+  icon: Icon,
+  title,
+  children,
+  action,
+}: {
+  icon: typeof SearchX;
+  title: string;
+  children: React.ReactNode;
+  action?: React.ReactNode;
+}) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 8 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.3, ease: EASE_OUT }}
+      className="mt-6 flex flex-col items-center rounded-organic-card border border-dashed border-organic-border-strong/40 bg-organic-card/60 px-6 py-16 text-center sm:py-20"
+    >
+      <span className="flex size-14 items-center justify-center rounded-full bg-organic-surface text-organic-ink-muted">
+        <Icon className="size-6" aria-hidden />
+      </span>
+      <h2 className="organic-type-heading mt-6 text-organic-ink">{title}</h2>
+      <p className="organic-type-body mt-2 max-w-md text-balance text-organic-ink-muted">{children}</p>
+      {action && <div className="mt-8">{action}</div>}
+    </motion.div>
+  );
+}
+
 export function PublicJobsListOrganic({ jobs }: { jobs: PublicJobSummary[] }) {
   const [query, setQuery] = useState("");
   const [department, setDepartment] = useState("all");
@@ -116,6 +144,15 @@ export function PublicJobsListOrganic({ jobs }: { jobs: PublicJobSummary[] }) {
 
   const hasFilters = query !== "" || department !== "all" || location !== "all";
 
+  const searchRef = useRef<HTMLInputElement>(null);
+  function clearFilters() {
+    setQuery("");
+    setDepartment("all");
+    setLocation("all");
+    // The button that was clicked disappears; keep keyboard focus in the filters.
+    searchRef.current?.focus();
+  }
+
   const roleWord = (n: number) => (n === 1 ? "role" : "roles");
 
   const [staggerDone, setStaggerDone] = useState(false);
@@ -128,66 +165,83 @@ export function PublicJobsListOrganic({ jobs }: { jobs: PublicJobSummary[] }) {
     // Honour the OS "reduce motion" setting for every Framer animation below.
     <MotionConfig reducedMotion="user">
       <OrganicCareersFrame>
-        <CareersHero size="large">
-          <div className="max-w-2xl">
-            <p className="organic-type-eyebrow text-organic-accent-text">Open positions</p>
-            <h1 className="organic-type-display mt-5 text-organic-ink">Find work that moves people forward.</h1>
-            <p className="organic-type-lead mt-6 max-w-xl text-organic-ink-muted">
-              Join a team redefining operational excellence — explore open roles across engineering, operations, and
-              beyond.
-            </p>
-          </div>
-        </CareersHero>
+        <JobsHero />
         <CurveDivider fill="var(--color-organic-surface)" className="-mt-px h-10 sm:h-16 md:h-20" />
 
         <main className={`${careersContainer} pt-12 pb-20 sm:pt-16 sm:pb-28`}>
-          <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
-            <label className="relative flex-1">
-              <span className="sr-only">Search roles</span>
-              <Search
-                className="pointer-events-none absolute top-1/2 left-4 size-4 -translate-y-1/2 text-organic-ink-faint"
-                aria-hidden
-              />
-              <input
-                type="search"
-                value={query}
-                onChange={(e) => setQuery(e.target.value)}
-                placeholder="Search roles…"
-                className={`${filterControlClass} pr-4 pl-10 placeholder:text-organic-ink-faint`}
-              />
-            </label>
-            <OrganicFilterSelect
-              label="Department"
-              value={department}
-              onChange={setDepartment}
-              options={[{ value: "all", label: "All departments" }, ...departments.map((d) => ({ value: d, label: d }))]}
-              className="sm:w-56"
-              triggerClassName={filterControlClass}
-            />
-            <OrganicFilterSelect
-              label="Location"
-              value={location}
-              onChange={setLocation}
-              options={[{ value: "all", label: "All locations" }, ...locations.map((l) => ({ value: l, label: l }))]}
-              className="sm:w-56"
-              triggerClassName={filterControlClass}
-            />
-          </div>
-
           {jobs.length > 0 && (
-            <p className="organic-type-meta mt-8 text-organic-ink-muted" aria-live="polite">
-              {hasFilters
-                ? `Showing ${filtered.length} of ${jobs.length} open ${roleWord(jobs.length)}`
-                : `${jobs.length} open ${roleWord(jobs.length)}`}
-            </p>
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+              <label className="relative flex-1">
+                <span className="sr-only">Search roles</span>
+                <Search
+                  className="pointer-events-none absolute top-1/2 left-4 size-4 -translate-y-1/2 text-organic-ink-faint"
+                  aria-hidden
+                />
+                <input
+                  ref={searchRef}
+                  type="search"
+                  value={query}
+                  onChange={(e) => setQuery(e.target.value)}
+                  placeholder="Search roles…"
+                  className={`${filterControlClass} pr-4 pl-10 placeholder:text-organic-ink-faint`}
+                />
+              </label>
+              <OrganicFilterSelect
+                label="Department"
+                value={department}
+                onChange={setDepartment}
+                options={[{ value: "all", label: "All departments" }, ...departments.map((d) => ({ value: d, label: d }))]}
+                className="sm:w-56"
+                triggerClassName={filterControlClass}
+              />
+              <OrganicFilterSelect
+                label="Location"
+                value={location}
+                onChange={setLocation}
+                options={[{ value: "all", label: "All locations" }, ...locations.map((l) => ({ value: l, label: l }))]}
+                className="sm:w-56"
+                triggerClassName={filterControlClass}
+              />
+            </div>
           )}
 
-          {filtered.length === 0 ? (
-            <p className="organic-type-body mt-6 text-organic-ink-muted">
-              {jobs.length > 0 && hasFilters
-                ? "No roles match your filters."
-                : "There are no open positions right now — check back soon."}
-            </p>
+          {jobs.length > 0 && (
+            <div className="mt-8 flex min-h-6 flex-wrap items-center gap-x-4 gap-y-1">
+              <p className="organic-type-meta text-organic-ink-muted" aria-live="polite">
+                {hasFilters
+                  ? `Showing ${filtered.length} of ${jobs.length} open ${roleWord(jobs.length)}`
+                  : `${jobs.length} open ${roleWord(jobs.length)}`}
+              </p>
+              {hasFilters && filtered.length > 0 && (
+                <button
+                  type="button"
+                  onClick={clearFilters}
+                  className="organic-type-meta rounded-organic-control text-organic-accent-text underline-offset-4 hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-organic-accent"
+                >
+                  Clear filters
+                </button>
+              )}
+            </div>
+          )}
+
+          {jobs.length === 0 ? (
+            <EmptyState icon={BriefcaseBusiness} title="No open positions right now">
+              New roles are posted here as soon as they open. Check back soon.
+            </EmptyState>
+          ) : filtered.length === 0 ? (
+            <EmptyState
+              icon={SearchX}
+              title="No roles match your filters"
+              action={
+                <OrganicButton type="button" variant="secondary" onClick={clearFilters}>
+                  <RotateCcw className="size-4" aria-hidden />
+                  Clear filters
+                </OrganicButton>
+              }
+            >
+              Try a different search term, or clear the filters to see all {jobs.length} open{" "}
+              {roleWord(jobs.length)}.
+            </EmptyState>
           ) : (
             <ul className="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-2 lg:gap-8">
               <AnimatePresence mode="popLayout">
