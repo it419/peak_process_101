@@ -2,7 +2,7 @@ import { PeakMark } from "@/components/Logo";
 import { cn } from "@/lib/utils/cn";
 
 /** Same brand mark as the other two designs, paired with Canopy's own
- *  Fraunces italic lockup instead of Design 1's Lora or Dark's Space Grotesk.
+ *  Newsreader italic lockup instead of Design 1's Lora or Dark's Space Grotesk.
  *  `subtitle` names the product area (onboarding flow vs. careers site). */
 export function CanopyWordmark({
   className,

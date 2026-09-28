@@ -138,7 +138,7 @@ export function CanopyHelpPanel({
   return (
     <aside className={cn(canopyHelpPanelClass, "order-first xl:order-none")}>
       {Icon && (
-        <span className="mb-3.5 flex size-11 items-center justify-center rounded-canopy-card bg-canopy-card text-canopy-accent-text">
+        <span className="mb-3.5 hidden size-11 items-center justify-center sm:flex rounded-canopy-card bg-canopy-card text-canopy-accent-text">
           <Icon className="size-5" aria-hidden />
         </span>
       )}
