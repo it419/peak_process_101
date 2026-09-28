@@ -123,6 +123,30 @@ const THEMES: Record<DesignMode, SidebarTheme> = {
     track: "bg-organic-surface-2",
     fill: "bg-organic-accent",
   },
+  canopy: {
+    surface: "bg-canopy-forest border-canopy-forest-line text-canopy-forest-ink",
+    brand: "font-canopy-ui text-white",
+    brandSub: "text-canopy-forest-muted",
+    section: "text-canopy-forest-muted",
+    item: "text-canopy-forest-ink hover:bg-canopy-forest-raised hover:text-white",
+    itemActive: "bg-canopy-forest-active text-white",
+    indicator: "bg-canopy-forest-gold",
+    control: "text-canopy-forest-ink hover:bg-canopy-forest-raised hover:text-white",
+    focus: "focus-visible:outline-canopy-forest-gold",
+    divider: "border-canopy-forest-line",
+    backdrop: "bg-canopy-forest-deep/60",
+    font: "font-canopy-ui",
+    step: {
+      completed: "border-canopy-accent bg-[#2e6b55] text-white",
+      current: "border-canopy-forest-gold text-canopy-forest-gold ring-2 ring-canopy-forest-gold/25",
+      blocked: "border-canopy-forest-gold/70 text-canopy-forest-gold",
+      upcoming: "border-canopy-forest-line text-canopy-forest-muted",
+    },
+    stepLine: "bg-canopy-forest-line",
+    stepViewing: "bg-canopy-forest-active text-white",
+    track: "bg-canopy-forest-raised",
+    fill: "bg-canopy-forest-gold",
+  },
 };
 
 /* ------------------------------------------------------------------ */

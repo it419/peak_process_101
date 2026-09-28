@@ -1,9 +1,10 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
-export type DesignMode = "current" | "dark" | "organic";
+export type DesignMode = "current" | "dark" | "organic" | "canopy";
 
 export const DESIGN_MODE_OPTIONS: { value: DesignMode; label: string }[] = [
+  { value: "canopy", label: "Canopy — Final" },
   { value: "current", label: "Current — Peak HR" },
   { value: "dark", label: "Dark — Premium" },
   { value: "organic", label: "Organic — Curved" },
@@ -24,9 +25,15 @@ interface DesignState {
 export const useDesignStore = create<DesignState>()(
   persist(
     (set) => ({
-      mode: "current",
+      mode: "canopy",
       setMode: (mode) => set({ mode }),
     }),
-    { name: "ppp-design-mode" },
+    {
+      name: "ppp-design-mode",
+      // v1: Canopy is the approved design, so everyone starts on it once;
+      // the switcher still lets anyone preview the older designs.
+      version: 1,
+      migrate: () => ({ mode: "canopy" as DesignMode }),
+    },
   ),
 );

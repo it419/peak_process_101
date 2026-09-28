@@ -120,11 +120,102 @@
   --font-organic-display: var(--font-fraunces), Georgia, serif;
   --font-organic-sans: var(--font-work-sans), system-ui, sans-serif;
   --font-organic-ui: var(--font-geist), system-ui, -apple-system, "Segoe UI", sans-serif;
+
+  /* ================================================================
+     Design 4 — Canopy (final). Ledger's structure with Evergreen's look:
+     Newsreader serif titles, Manrope UI, Plex Mono numbers, pine accent,
+     brass highlights, forest sidebar. Same token names as Organic so the
+     two share component structure. Light values here; dark overrides in
+     "Canopy dark" below. All text pairs checked for WCAG AA.
+     ================================================================ */
+  --color-canopy-bg: #f7f7f3;
+  --color-canopy-surface: #eef4f0; /* sage: guidance panels, hero band */
+  --color-canopy-surface-2: #e3ece7;
+  --color-canopy-card: #ffffff; /* cards, inputs, menus, tables */
+  --color-canopy-skeleton: #e8ede8;
+  --color-canopy-border: #e2e7e2;
+  --color-canopy-border-strong: #86938c; /* control boundaries, 3.2:1 on card */
+  --color-canopy-ink: #16271f;
+  --color-canopy-ink-muted: #56675f;
+  --color-canopy-ink-faint: #5e6e66;
+  --color-canopy-gold: #8c6420; /* brass */
+  --color-canopy-gold-tint: #f6eedd;
+  --color-canopy-accent: #1f6f54; /* pine */
+  --color-canopy-accent-hover: #185a44;
+  --color-canopy-accent-text: #1f6f54;
+  --color-canopy-on-accent: #ffffff;
+  --color-canopy-accent-tint: #e3f0e9;
+  --color-canopy-success: #1f6f54;
+  --color-canopy-success-tint: #e3f0e9;
+  --color-canopy-error: #b3413a;
+  --color-canopy-error-tint: #f6e4e1;
+  --color-canopy-table-head: #fafaf7;
+  /* Forest sidebar (not themed: it stays forest in light and dark). */
+  --color-canopy-forest: #15342b;
+  --color-canopy-forest-deep: #0e251e;
+  --color-canopy-forest-raised: #1b3e33;
+  --color-canopy-forest-active: #21493c;
+  --color-canopy-forest-line: #24473b;
+  --color-canopy-forest-ink: #d6e3dc;
+  --color-canopy-forest-muted: #8faa9d;
+  --color-canopy-forest-gold: #d9b46a;
+
+  --radius-canopy-card: 0.75rem;
+  --radius-canopy-control: 0.625rem;
+  --radius-canopy-pill: 9999px;
+
+  --shadow-canopy-rest: 0 1px 2px rgb(var(--canopy-shadow-rgb) / calc(0.05 * var(--canopy-shadow-k)));
+  --shadow-canopy-lift: 0 10px 28px -18px rgb(var(--canopy-shadow-rgb) / calc(0.4 * var(--canopy-shadow-k))), 0 2px 6px -2px rgb(var(--canopy-shadow-rgb) / calc(0.06 * var(--canopy-shadow-k)));
+  --shadow-canopy-menu: 0 18px 40px -12px rgb(var(--canopy-shadow-rgb) / calc(0.28 * var(--canopy-shadow-k))), 0 2px 6px rgb(var(--canopy-shadow-rgb) / calc(0.08 * var(--canopy-shadow-k)));
+
+  --font-canopy-display: var(--font-newsreader), Georgia, serif;
+  --font-canopy-sans: var(--font-manrope), system-ui, sans-serif;
+  --font-canopy-ui: var(--font-manrope), system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-canopy-mono: var(--font-ibm-plex-mono), ui-monospace, monospace;
 }
 
 :root {
   --organic-shadow-rgb: 42 38 33;
   --organic-shadow-k: 1;
+  --canopy-shadow-rgb: 21 52 43;
+  --canopy-shadow-k: 1;
+}
+
+/* ================================================================
+   Canopy dark. Shares the careers light/dark preference with Organic
+   (data-organic-theme on <html>), scoped to pages with a
+   `data-canopy-surface` element.
+   ================================================================ */
+:root[data-organic-theme="dark"]:has([data-canopy-surface]) {
+  color-scheme: dark;
+  --color-canopy-bg: #0f1a16;
+  --color-canopy-surface: #15241e;
+  --color-canopy-surface-2: #1b2d26;
+  --color-canopy-card: #18291f;
+  --color-canopy-skeleton: #223630;
+  --color-canopy-border: #26392f;
+  --color-canopy-border-strong: #6e8278;
+  --color-canopy-ink: #e8efea;
+  --color-canopy-ink-muted: #a9b8b0;
+  --color-canopy-ink-faint: #93a39a;
+  --color-canopy-gold: #d9b46a;
+  --color-canopy-gold-tint: #2e2717;
+  --color-canopy-accent: #5fbf95;
+  --color-canopy-accent-hover: #74cca5;
+  --color-canopy-accent-text: #6cc9a0;
+  --color-canopy-on-accent: #0b1712;
+  --color-canopy-accent-tint: #173328;
+  --color-canopy-success: #6cc9a0;
+  --color-canopy-success-tint: #173328;
+  --color-canopy-error: #ec8a7c;
+  --color-canopy-error-tint: #2e1a17;
+  --color-canopy-table-head: #15241e;
+  --canopy-shadow-rgb: 0 0 0;
+  --canopy-shadow-k: 2.2;
+}
+
+body:has([data-canopy-surface]) {
+  background: var(--color-canopy-bg);
 }
 
 /* ================================================================
@@ -396,4 +487,207 @@ body {
   to {
     translate: 0 0;
   }
+}
+
+/* ================================================================
+   Canopy type scale (careers). One dominant page title in Fraunces;
+   everything else in Geist. Colour is applied separately so each step
+   works on any surface.
+   ================================================================ */
+@utility canopy-type-display {
+  font-family: var(--font-canopy-display);
+  font-weight: 600;
+  font-size: clamp(2.375rem, 1.55rem + 3.3vw, 3.5rem);
+  line-height: 1.08;
+  letter-spacing: -0.02em;
+  text-wrap: balance;
+}
+
+@utility canopy-type-title {
+  font-family: var(--font-canopy-display);
+  font-weight: 600;
+  font-size: clamp(2rem, 1.45rem + 2.2vw, 2.75rem);
+  line-height: 1.12;
+  letter-spacing: -0.015em;
+  text-wrap: balance;
+}
+
+@utility canopy-type-heading {
+  font-family: var(--font-canopy-ui);
+  font-weight: 600;
+  font-size: 1.125rem;
+  line-height: 1.4;
+  letter-spacing: -0.01em;
+}
+
+@utility canopy-type-card-title {
+  font-family: var(--font-canopy-ui);
+  font-weight: 600;
+  font-size: 1.1875rem;
+  line-height: 1.35;
+  letter-spacing: -0.012em;
+  text-wrap: balance;
+}
+
+@utility canopy-type-lead {
+  font-size: 1.0625rem;
+  line-height: 1.65;
+  @media (width >= 40rem) {
+    font-size: 1.125rem;
+  }
+}
+
+@utility canopy-type-body {
+  font-size: 0.9375rem;
+  line-height: 1.7;
+}
+
+@utility canopy-type-meta {
+  font-size: 0.8125rem;
+  font-weight: 500;
+  line-height: 1.5;
+}
+
+@utility canopy-type-eyebrow {
+  font-size: 0.75rem;
+  font-weight: 600;
+  line-height: 1.4;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+/* ================================================================
+   Canopy careers route transitions (React <ViewTransition>, see
+   CanopyCareersFrame). Forward = deeper into list → detail → apply.
+   Short, small offsets: this should read as continuity, not motion.
+   ================================================================ */
+::view-transition {
+  pointer-events: none;
+}
+
+::view-transition-group(canopy-careers-header) {
+  animation: none;
+  z-index: 100;
+}
+::view-transition-old(canopy-careers-header) {
+  display: none;
+}
+::view-transition-new(canopy-careers-header) {
+  animation: none;
+}
+
+::view-transition-old(.canopy-nav-forward) {
+  --canopy-slide: -24px;
+  animation:
+    140ms ease-in both canopy-fade reverse,
+    280ms cubic-bezier(0.4, 0, 0.2, 1) both canopy-slide reverse;
+}
+::view-transition-new(.canopy-nav-forward) {
+  --canopy-slide: 24px;
+  animation:
+    200ms ease-out 100ms both canopy-fade,
+    320ms cubic-bezier(0.22, 1, 0.36, 1) both canopy-slide;
+}
+::view-transition-old(.canopy-nav-back) {
+  --canopy-slide: 24px;
+  animation:
+    140ms ease-in both canopy-fade reverse,
+    280ms cubic-bezier(0.4, 0, 0.2, 1) both canopy-slide reverse;
+}
+::view-transition-new(.canopy-nav-back) {
+  --canopy-slide: -24px;
+  animation:
+    200ms ease-out 100ms both canopy-fade,
+    320ms cubic-bezier(0.22, 1, 0.36, 1) both canopy-slide;
+}
+
+@keyframes canopy-fade {
+  from {
+    opacity: 0;
+  }
+}
+@keyframes canopy-slide {
+  from {
+    translate: var(--canopy-slide) 0;
+  }
+  to {
+    translate: 0 0;
+  }
+}
+
+/* Reduced motion: keep a quick crossfade, drop all movement. */
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation-name: canopy-fade !important;
+    animation-duration: 120ms !important;
+    animation-delay: 0s !important;
+  }
+  ::view-transition-old(*) {
+    animation-direction: reverse !important;
+  }
+  /* The pinned header never animates. */
+  ::view-transition-new(canopy-careers-header) {
+    animation: none !important;
+  }
+}
+
+/* ================================================================
+   Canopy loading skeletons: a soft surface block with a slow sheen.
+   ================================================================ */
+.canopy-skeleton {
+  position: relative;
+  overflow: hidden;
+  background: var(--color-canopy-skeleton);
+}
+.canopy-skeleton::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  translate: -100% 0;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    color-mix(in oklab, var(--color-canopy-card) 55%, transparent),
+    transparent
+  );
+  animation: canopy-shimmer 1.6s ease-in-out infinite;
+}
+@keyframes canopy-shimmer {
+  to {
+    translate: 100% 0;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .canopy-skeleton::after {
+    animation: none;
+    display: none;
+  }
+}
+
+/* Skeleton -> content hand-off (and untyped navigations such as the
+   browser back button): the placeholder leaves quickly, the page arrives
+   with a short fade and a small upward settle. */
+::view-transition-old(.canopy-reveal-out) {
+  animation: 120ms ease-out both canopy-fade reverse;
+}
+::view-transition-new(.canopy-reveal-in) {
+  --canopy-rise: 8px;
+  animation:
+    220ms ease-out 80ms both canopy-fade,
+    320ms cubic-bezier(0.22, 1, 0.36, 1) both canopy-rise;
+}
+@keyframes canopy-rise {
+  from {
+    translate: 0 var(--canopy-rise);
+  }
+  to {
+    translate: 0 0;
+  }
+}
+
+/* Canopy: numbers, dates and counts. */
+@utility canopy-mono {
+  font-family: var(--font-canopy-mono);
+  font-variant-numeric: tabular-nums;
 }

@@ -6,6 +6,10 @@ import {
   OrganicJobDetailSkeleton,
   OrganicJobsListSkeleton,
 } from "@/components/design/organic/recruitment/OrganicCareersSkeletons";
+import {
+  CanopyJobDetailSkeleton,
+  CanopyJobsListSkeleton,
+} from "@/components/design/canopy/recruitment/CanopyCareersSkeletons";
 
 /**
  * Loading state for the public careers routes (rendered by app/jobs/**
@@ -23,6 +27,7 @@ export function CareersLoadingSwitcher() {
   const page = pathname === "/jobs" ? "list" : "detail";
 
   if (mode === "organic") return page === "list" ? <OrganicJobsListSkeleton /> : <OrganicJobDetailSkeleton />;
+  if (mode === "canopy") return page === "list" ? <CanopyJobsListSkeleton /> : <CanopyJobDetailSkeleton />;
 
   return (
     <div className={mode === "dark" ? "min-h-screen bg-dark-bg" : "min-h-screen bg-paper-50"} aria-busy="true">

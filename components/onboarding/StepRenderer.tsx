@@ -14,6 +14,10 @@ export function StepRenderer({ step }: { step: StepConfig }) {
     const Component = step.DarkComponent;
     return <Component />;
   }
+  if (mode === "canopy") {
+    const Component = step.CanopyComponent;
+    return <Component />;
+  }
   if (mode === "organic") {
     const Component = step.OrganicComponent;
     return <Component />;
