@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { ViewTransition, type ReactNode } from "react";
-import { CanopyWordmark } from "@/components/design/canopy/CanopyWordmark";
+import { PeakMark } from "@/components/Logo";
 import { CanopyThemeToggle } from "@/components/design/canopy/CanopyThemeToggle";
 import { NAV_BACK, careersContainer } from "@/components/design/canopy/recruitment/careersUi";
 
@@ -29,16 +29,27 @@ export function CanopyCareersFrame({ children, skeleton = false }: { children: R
     // enter/exit for boundaries that aren't inside freshly inserted DOM.
     <ViewTransition enter={pageEnter} exit={skeleton ? skeletonExit : pageExit} default="none">
       <div data-canopy-surface="" className="min-h-screen bg-canopy-bg font-canopy-ui text-canopy-ink">
-        <header className="border-b border-canopy-border" style={{ viewTransitionName: "canopy-careers-header" }}>
-          <div className={`${careersContainer} flex items-center justify-between gap-4 py-5`}>
+        <header
+          className="border-b border-canopy-border bg-canopy-card"
+          style={{ viewTransitionName: "canopy-careers-header" }}
+        >
+          <div className={`${careersContainer} flex h-15 items-center justify-between gap-4 sm:h-17`}>
             <Link
               href="/jobs"
               transitionTypes={NAV_BACK}
-              className="min-w-0 rounded-canopy-control focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-canopy-accent"
+              className="flex min-w-0 items-center gap-2.5 rounded-canopy-control focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-canopy-accent sm:gap-3"
             >
-              <CanopyWordmark subtitle="Careers" />
+              <PeakMark className="size-7 shrink-0 sm:size-8" />
+              {/* On phones the lockup shortens to mark + "Careers" (the name stays for screen readers). */}
+              <span className="truncate text-base font-bold tracking-[-0.01em] text-canopy-ink max-sm:sr-only">
+                Peak Process Partners
+              </span>
+              <span aria-hidden className="h-5.5 w-px shrink-0 bg-canopy-border max-sm:hidden" />
+              <span className="truncate text-[0.9375rem] font-semibold text-canopy-ink sm:font-medium sm:text-canopy-ink-muted">
+                Careers
+              </span>
             </Link>
-            <CanopyThemeToggle />
+            <CanopyThemeToggle className="size-9" />
           </div>
         </header>
         {children}

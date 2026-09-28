@@ -9,7 +9,7 @@ import type { PublicJobSummary } from "@/types/recruitment";
  *  apply, confirmation) so repeated elements stay identical everywhere. */
 
 /** One content column for header, hero, body and footer so their edges line up. */
-export const careersContainer = "mx-auto w-full max-w-6xl px-5 sm:px-10";
+export const careersContainer = "mx-auto w-full max-w-[76rem] px-4 sm:px-8 tablet:px-10";
 
 /** Navigation direction tags for <Link transitionTypes> (styled in
  *  globals.css). Deeper into the flow (list → detail → apply) is forward;
@@ -17,9 +17,29 @@ export const careersContainer = "mx-auto w-full max-w-6xl px-5 sm:px-10";
 export const NAV_FORWARD = ["canopy-nav-forward"];
 export const NAV_BACK = ["canopy-nav-back"];
 
-/** Shared look for the jobs search box and filter dropdowns (same height, radius, border). */
+/** Shared look for the compact filter dropdowns next to the jobs table. */
 export const filterControlClass =
-  "h-11 w-full rounded-canopy-pill border border-canopy-border-strong bg-canopy-card text-sm text-canopy-ink outline-none transition-[border-color,box-shadow] duration-150 hover:border-canopy-ink-muted focus-visible:border-canopy-accent focus-visible:ring-3 focus-visible:ring-canopy-accent/20";
+  "h-9 w-full rounded-canopy-control border border-canopy-border-strong bg-canopy-card px-3 text-[0.8125rem] font-semibold text-canopy-ink outline-none transition-[border-color,box-shadow] duration-150 hover:border-canopy-ink-muted focus-visible:border-canopy-accent focus-visible:ring-3 focus-visible:ring-canopy-accent/20";
+
+/** White bordered panel (Ledger: hairline border, 12px corners, low shadow). */
+export const panelClass = "rounded-canopy-card border border-canopy-border bg-canopy-card shadow-canopy-rest";
+
+/** Sage guidance panel ("Interested?", "What happens next"). */
+export const softPanelClass = "rounded-canopy-card bg-canopy-surface";
+
+/** Rounded sage band that opens the careers pages (sits inside the container). */
+export const bandClass = "rounded-3xl bg-canopy-surface";
+
+/** Team (department) pill: pine on tint. */
+export const teamPillClass =
+  "inline-flex items-center rounded-canopy-pill bg-canopy-accent-tint px-2.5 py-1 text-xs leading-none font-bold whitespace-nowrap text-canopy-accent-text";
+
+/** Neutral pill for employment type. */
+export const typePillClass =
+  "inline-flex items-center rounded-canopy-pill bg-canopy-surface-2 px-2.5 py-1 text-xs leading-none font-semibold whitespace-nowrap text-canopy-ink";
+
+/** Serif section heading used inside panels. */
+export const panelHeadingClass = "font-canopy-display text-[1.3125rem] leading-snug font-semibold text-canopy-ink";
 
 export function experienceRange(min: number | null, max: number | null): string | null {
   if (min == null && max == null) return null;
@@ -38,17 +58,18 @@ export function formatSalary(min: number | null, max: number | null): string | n
 
 type Icon = typeof MapPin;
 
-export function MetaChip({ icon: Icon, children }: { icon: Icon; children: ReactNode }) {
+/** Inline icon + label used in the job detail meta row. */
+export function MetaItem({ icon: Icon, children }: { icon: Icon; children: ReactNode }) {
   return (
-    <span className="canopy-type-meta inline-flex items-center gap-1.5 rounded-canopy-pill border border-canopy-border bg-canopy-bg px-3 py-1 text-canopy-ink-muted">
-      <Icon className="size-3.5 shrink-0 text-canopy-ink-faint" aria-hidden />
+    <span className="inline-flex items-center gap-1.5 text-sm font-semibold text-canopy-ink">
+      <Icon className="size-4 shrink-0 text-canopy-ink-muted" aria-hidden />
       {children}
     </span>
   );
 }
 
-/** The standard chip row for a job: location, type, work mode, experience (+ salary if public). */
-export function JobMetaChips({
+/** The meta row under a job title: location, type, work mode, experience (+ salary if public). */
+export function JobMetaRow({
   job,
   salary,
   className,
@@ -59,26 +80,26 @@ export function JobMetaChips({
 }) {
   const experience = experienceRange(job.experienceMinYears, job.experienceMaxYears);
   return (
-    <ul className={cn("flex flex-wrap gap-2", className)} aria-label="Role details">
+    <ul className={cn("flex flex-wrap gap-x-5 gap-y-2", className)} aria-label="Role details">
       {job.location && (
         <li>
-          <MetaChip icon={MapPin}>{job.location}</MetaChip>
+          <MetaItem icon={MapPin}>{job.location}</MetaItem>
         </li>
       )}
       <li>
-        <MetaChip icon={Briefcase}>{employmentTypeLabel(job.employmentType)}</MetaChip>
+        <MetaItem icon={Briefcase}>{employmentTypeLabel(job.employmentType)}</MetaItem>
       </li>
       <li>
-        <MetaChip icon={Clock}>{workModeLabel(job.workMode)}</MetaChip>
+        <MetaItem icon={Clock}>{workModeLabel(job.workMode)}</MetaItem>
       </li>
       {experience && (
         <li>
-          <MetaChip icon={TrendingUp}>{experience}</MetaChip>
+          <MetaItem icon={TrendingUp}>{experience}</MetaItem>
         </li>
       )}
       {salary && (
         <li>
-          <MetaChip icon={Banknote}>{salary}</MetaChip>
+          <MetaItem icon={Banknote}>{salary}</MetaItem>
         </li>
       )}
     </ul>
@@ -87,17 +108,41 @@ export function JobMetaChips({
 
 function FactRow({ icon: Icon, label, value }: { icon: Icon; label: string; value: string }) {
   return (
-    <div className="flex items-start gap-3">
-      <Icon className="mt-0.5 size-4 shrink-0 text-canopy-ink-faint" aria-hidden />
+    <div className="flex items-start gap-2.5">
+      <Icon className="mt-0.5 size-4 shrink-0 text-canopy-ink-muted" aria-hidden />
       <div className="min-w-0">
-        <dt className="canopy-type-meta font-normal text-canopy-ink-faint">{label}</dt>
-        <dd className="text-[0.9375rem] font-medium text-canopy-ink">{value}</dd>
+        <dt className="text-xs font-medium text-canopy-ink-muted">{label}</dt>
+        <dd className="text-sm font-semibold text-canopy-ink">{value}</dd>
       </div>
     </div>
   );
 }
 
-/** Sidebar summary card used on the detail and apply pages. */
+/** Label/value list of a job's facts (detail sidebar, apply summary). */
+export function JobFacts({
+  job,
+  salary,
+  showLocation = true,
+  className,
+}: {
+  job: PublicJobSummary;
+  salary?: string | null;
+  showLocation?: boolean;
+  className?: string;
+}) {
+  const experience = experienceRange(job.experienceMinYears, job.experienceMaxYears);
+  return (
+    <dl className={cn("flex flex-col gap-3.5", className)}>
+      {showLocation && job.location && <FactRow icon={MapPin} label="Location" value={job.location} />}
+      <FactRow icon={Briefcase} label="Employment type" value={employmentTypeLabel(job.employmentType)} />
+      <FactRow icon={Clock} label="Work mode" value={workModeLabel(job.workMode)} />
+      {experience && <FactRow icon={TrendingUp} label="Experience" value={experience} />}
+      {salary && <FactRow icon={Banknote} label="Salary" value={salary} />}
+    </dl>
+  );
+}
+
+/** Sidebar summary card on the apply page: eyebrow, serif title, team · location, facts. */
 export function JobSummaryCard({
   eyebrow,
   job,
@@ -109,21 +154,15 @@ export function JobSummaryCard({
   salary?: string | null;
   children?: ReactNode;
 }) {
-  const experience = experienceRange(job.experienceMinYears, job.experienceMaxYears);
+  const subtitle = [job.department, job.location].filter(Boolean).join(" · ");
   return (
-    <div className="rounded-canopy-card border border-canopy-border bg-canopy-card p-7 shadow-canopy-rest">
-      <p className="canopy-type-eyebrow text-canopy-ink-faint">{eyebrow}</p>
-      <p className="canopy-type-card-title mt-2 text-canopy-ink">{job.title}</p>
-      {job.department && <p className="canopy-type-meta mt-1 text-canopy-ink-muted">{job.department}</p>}
-
-      <dl className="mt-6 flex flex-col gap-4 border-t border-canopy-border pt-6">
-        {job.location && <FactRow icon={MapPin} label="Location" value={job.location} />}
-        <FactRow icon={Briefcase} label="Employment type" value={employmentTypeLabel(job.employmentType)} />
-        <FactRow icon={Clock} label="Work mode" value={workModeLabel(job.workMode)} />
-        {experience && <FactRow icon={TrendingUp} label="Experience" value={experience} />}
-        {salary && <FactRow icon={Banknote} label="Salary" value={salary} />}
-      </dl>
-
+    <div className={cn(panelClass, "p-5 sm:px-6")}>
+      <p className="canopy-type-eyebrow text-canopy-accent-text">{eyebrow}</p>
+      <p className="mt-2 font-canopy-display text-[1.375rem] leading-tight font-semibold text-canopy-ink">
+        {job.title}
+      </p>
+      {subtitle && <p className="mt-1 text-[0.9375rem] text-canopy-ink-muted">{subtitle}</p>}
+      <JobFacts job={job} salary={salary} showLocation={false} className="mt-4 border-t border-canopy-border pt-4" />
       {children}
     </div>
   );
@@ -134,44 +173,63 @@ export function BackLink({ href, children }: { href: string; children: ReactNode
     <Link
       href={href}
       transitionTypes={NAV_BACK}
-      className="canopy-type-meta group inline-flex max-w-full items-center gap-1.5 rounded-canopy-control text-canopy-ink-muted transition-colors hover:text-canopy-ink focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-canopy-accent"
+      className="group inline-flex max-w-full items-center gap-1.5 rounded-canopy-control text-[0.8125rem] font-semibold text-canopy-ink-muted transition-colors hover:text-canopy-ink focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-canopy-accent"
     >
-      <ArrowLeft className="size-4 shrink-0 transition-transform duration-150 group-hover:-translate-x-0.5" aria-hidden />
+      <ArrowLeft
+        className="size-4 shrink-0 transition-transform duration-150 group-hover:-translate-x-0.5 motion-reduce:transition-none"
+        aria-hidden
+      />
       <span className="truncate">{children}</span>
     </Link>
   );
 }
 
-/** Tinted band at the top of every careers page, flowing into the page via a curve. */
-export function CareersHero({ children, size = "default" }: { children: ReactNode; size?: "default" | "large" }) {
+/** Rounded sage band at the top of the apply and confirmation pages. */
+export function CareersBand({ children, className }: { children: ReactNode; className?: string }) {
   return (
-    <div className="bg-canopy-surface">
+    <div className={`${careersContainer} pt-5 sm:pt-6`}>
+      <div className={cn(bandClass, "px-5 py-6 sm:px-10 sm:py-7", className)}>{children}</div>
+    </div>
+  );
+}
+
+/** Hero band for the jobs list. The copy is static and shared with the
+ *  loading skeleton so the page doesn't shift when the real list arrives;
+ *  `search` sits under the lead and `teams` fills the right column.
+ *  Placeholder marketing copy: replace with approved wording. */
+export function JobsHero({ search, teams }: { search?: ReactNode; teams?: ReactNode }) {
+  return (
+    <div className={`${careersContainer} pt-3 sm:pt-6`}>
       <div
         className={cn(
-          careersContainer,
-          size === "large" ? "pt-16 pb-14 sm:pt-24 sm:pb-20" : "pt-14 pb-12 sm:pt-20 sm:pb-16",
+          bandClass,
+          "grid grid-cols-1 items-center gap-8 px-5 py-6 sm:px-10 sm:py-9 tablet:grid-cols-[1.2fr_1fr] tablet:gap-12 tablet:px-11",
         )}
       >
-        {children}
+        <div className="min-w-0">
+          <p className="canopy-type-eyebrow text-canopy-accent-text">Join us</p>
+          <h1 className="mt-2.5 font-canopy-display text-[clamp(1.75rem,1.1rem+2.6vw,3.125rem)] leading-[1.06] font-semibold tracking-[-0.02em] text-balance text-canopy-ink">
+            Find work that moves people forward.
+          </h1>
+          <p className="mt-3 max-w-[29rem] text-[0.9375rem] leading-relaxed text-canopy-ink-muted sm:text-base">
+            Join a team redefining operational excellence — explore open roles across engineering, operations, and
+            beyond.
+          </p>
+          {search && <div className="mt-4 sm:mt-5">{search}</div>}
+        </div>
+        {teams && <div className="min-w-0 max-sm:hidden">{teams}</div>}
       </div>
     </div>
   );
 }
 
-/** Hero for the jobs list. Static copy, shared with the loading skeleton so
- *  the page doesn't shift when the real list arrives.
- *  Placeholder marketing copy: replace with approved wording. */
-export function JobsHero() {
+/** Small footer shared by the list page and its skeleton. */
+export function CareersFooter() {
   return (
-    <CareersHero size="large">
-      <div className="max-w-2xl">
-        <p className="canopy-type-eyebrow text-canopy-accent-text">Open positions</p>
-        <h1 className="canopy-type-display mt-5 text-canopy-ink">Find work that moves people forward.</h1>
-        <p className="canopy-type-lead mt-6 max-w-xl text-canopy-ink-muted">
-          Join a team redefining operational excellence — explore open roles across engineering, operations, and
-          beyond.
-        </p>
-      </div>
-    </CareersHero>
+    <footer className={`${careersContainer} pb-10`}>
+      <p className="border-t border-canopy-border pt-8 text-center text-[0.8125rem] text-canopy-ink-muted">
+        Don{"’"}t see the right fit? Check back soon — we{"’"}re always growing.
+      </p>
+    </footer>
   );
 }
