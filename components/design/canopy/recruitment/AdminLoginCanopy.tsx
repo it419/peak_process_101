@@ -2,6 +2,7 @@
 
 import { CanopyTextField } from "@/components/design/canopy/ui/CanopyTextField";
 import { CanopyButton } from "@/components/design/canopy/ui/CanopyButton";
+import { CanopyPasswordField } from "@/components/design/canopy/ui/CanopyPasswordField";
 import { useAdminLoginLogic } from "@/hooks/recruitment/useAdminLoginLogic";
 
 /** The Peak mark on forest, matching the app sidebar. */
@@ -43,9 +44,8 @@ export function AdminLoginCanopy() {
               error={errors.email?.message}
               {...register("email")}
             />
-            <CanopyTextField
+            <CanopyPasswordField
               label="Password"
-              type="password"
               autoComplete="current-password"
               required
               error={errors.password?.message}
