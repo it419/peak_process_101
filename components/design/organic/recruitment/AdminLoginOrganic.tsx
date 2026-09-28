@@ -13,7 +13,7 @@ export function AdminLoginOrganic() {
     <div className="min-h-screen bg-organic-bg font-organic-sans">
       <div className="mx-auto flex min-h-screen max-w-sm flex-col items-center justify-center px-5 py-10">
         <div className="mb-8">
-          <OrganicWordmark />
+          <OrganicWordmark subtitle="HR Admin" />
         </div>
         <div className="w-full rounded-[1.75rem] bg-organic-surface px-7 py-9">
           <h1 className="font-organic-display text-xl font-semibold text-organic-ink">Admin sign in</h1>

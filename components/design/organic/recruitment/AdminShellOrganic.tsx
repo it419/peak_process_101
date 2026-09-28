@@ -21,7 +21,7 @@ export function AdminShellOrganic({ adminName, children }: { adminName: string; 
       <header className="border-b border-organic-border">
         <div className="mx-auto flex max-w-6xl items-center justify-between gap-6 px-5 py-4 sm:px-8">
           <div className="flex items-center gap-8">
-            <OrganicWordmark />
+            <OrganicWordmark subtitle="HR Admin" />
             <nav className="hidden gap-6 sm:flex">
               <Link
                 href="/admin/jobs"

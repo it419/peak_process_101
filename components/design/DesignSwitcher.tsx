@@ -12,21 +12,26 @@ import { DESIGN_MODE_OPTIONS, useDesignStore, type DesignMode } from "@/lib/desi
  * currently active) so it stays legible over the light paper canvas, the
  * near-black Dark design, and the ivory Organic design alike.
  *
- * On the careers and admin sites it sits bottom-left so it doesn't cover
- * their header controls (theme toggle, sign out). Onboarding keeps it
- * top-right because its mobile layout has a sticky bottom action bar.
+ * On the careers site it sits bottom-left and on the admin site bottom-right,
+ * so it covers neither their header controls (theme toggle, sign out) nor
+ * the app sidebar's collapse button. Onboarding keeps it top-right because
+ * its mobile layout has a sticky bottom action bar.
  */
 export function DesignSwitcher() {
   const mode = useDesignStore((s) => s.mode);
   const setMode = useDesignStore((s) => s.setMode);
   const pathname = usePathname();
-  const bottomLeft = pathname.startsWith("/jobs") || pathname.startsWith("/admin");
+  const position = pathname.startsWith("/jobs")
+    ? "bottom-3 left-3 tablet:bottom-4 tablet:left-4"
+    : pathname.startsWith("/admin")
+      ? "bottom-3 right-3 tablet:bottom-4 tablet:right-4"
+      : "top-3 right-3 tablet:top-4 tablet:right-4";
 
   return (
     <div
       className={cn(
         "fixed z-[100]",
-        bottomLeft ? "bottom-3 left-3 tablet:bottom-4 tablet:left-4" : "top-3 right-3 tablet:top-4 tablet:right-4",
+        position,
       )}
     >
       <label className="flex items-center gap-2 rounded-full border border-white/10 bg-[#111114]/95 py-1.5 pr-2 pl-3 shadow-[0_4px_16px_rgba(0,0,0,0.35)] backdrop-blur-sm">
