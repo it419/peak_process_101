@@ -13,9 +13,9 @@ function CanopyShellSkeleton() {
       <div className="h-3 w-24 rounded bg-canopy-skeleton" />
       <div className="mt-3 h-10 w-2/3 rounded bg-canopy-skeleton" />
       <div className="mt-3 h-4 w-1/2 rounded bg-canopy-skeleton" />
-      <div className="mt-6 grid gap-4 tablet:grid-cols-[minmax(0,1.25fr)_minmax(0,1fr)]">
+      <div className="mt-6 grid grid-cols-1 gap-4 xl:grid-cols-[minmax(0,1.25fr)_minmax(0,1fr)]">
         <div className="h-72 rounded-canopy-card bg-canopy-skeleton" />
-        <div className="hidden h-44 rounded-canopy-card bg-canopy-skeleton tablet:block" />
+        <div className="hidden h-44 rounded-canopy-card bg-canopy-skeleton xl:block" />
       </div>
     </div>
   );

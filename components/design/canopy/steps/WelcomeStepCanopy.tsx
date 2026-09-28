@@ -46,7 +46,7 @@ export function WelcomeStepCanopy() {
         documents. It should take about 10–15 minutes.
       </p>
 
-      <div className="mt-6 grid items-start gap-6 sm:gap-4 tablet:grid-cols-[minmax(0,1.25fr)_minmax(0,1fr)]">
+      <div className="mt-6 grid grid-cols-1 items-start gap-6 sm:gap-4 xl:grid-cols-[minmax(0,1.25fr)_minmax(0,1fr)]">
         <div className={canopyWorkPanelClass}>
           <CanopyTextField
             label="Your full name"

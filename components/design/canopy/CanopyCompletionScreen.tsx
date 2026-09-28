@@ -1,9 +1,18 @@
 "use client";
 
 import Link from "next/link";
-import { Check } from "lucide-react";
+import { ArrowRight, Check } from "lucide-react";
+import { cn } from "@/lib/utils/cn";
 import { useOnboardingStore } from "@/lib/store/onboardingStore";
-import { CurveDivider } from "./CurveDivider";
+import { canopyButtonVariants } from "./ui/CanopyButton";
+import {
+  CanopyEyebrow,
+  CanopyPageBar,
+  CanopyPill,
+  canopyHelpPanelClass,
+  canopyLeadClass,
+  canopyPageTitleClass,
+} from "./CanopyStepShell";
 
 function firstName(fullName: string): string {
   return fullName.trim().split(/\s+/)[0] ?? fullName;
@@ -20,43 +29,64 @@ export function CanopyCompletionScreen() {
 
   return (
     <div>
-      <div className="flex flex-col items-center rounded-[1.75rem] bg-canopy-surface px-6 py-14 text-center sm:py-20">
-        <span className="flex size-14 items-center justify-center rounded-full bg-canopy-success-tint text-canopy-success">
-          <Check className="size-7" strokeWidth={2.5} />
-        </span>
+      <CanopyPageBar trail={["Onboarding", "Complete"]} />
 
-        <p className="mt-6 text-[0.8125rem] font-semibold tracking-widest text-canopy-accent-text uppercase">
-          Peak Process Partners
-        </p>
-        <h1 className="font-canopy-display mt-2 text-[2rem] leading-tight font-semibold text-canopy-ink sm:text-[2.5rem]">
-          You{"’"}re all set{fullName ? `, ${firstName(fullName)}` : ""}.
-        </h1>
-        <p className="mt-4 max-w-md text-[0.9375rem] leading-relaxed text-canopy-ink-muted">
-          Your onboarding information has been submitted to HR{submittedAt ? ` on ${formatDate(submittedAt)}` : ""}.
-        </p>
-      </div>
-      <CurveDivider fill="var(--color-canopy-surface)" className="-mt-px h-8 sm:h-12 md:h-16" />
+      <span className="flex size-12 items-center justify-center rounded-full bg-canopy-success-tint text-canopy-success">
+        <Check className="size-6" strokeWidth={2.5} aria-hidden />
+      </span>
+      <CanopyEyebrow className="mt-5">Peak Process Partners</CanopyEyebrow>
+      <h1 className={canopyPageTitleClass}>
+        You{"’"}re all set
+        {fullName ? (
+          <>
+            , <em className="text-canopy-accent-text italic">{firstName(fullName)}.</em>
+          </>
+        ) : (
+          "."
+        )}
+      </h1>
+      <p className={canopyLeadClass}>
+        Your onboarding information has been submitted to HR{submittedAt ? ` on ${formatDate(submittedAt)}` : ""}.
+      </p>
 
-      <div className="mx-auto mt-6 flex max-w-lg flex-col items-center text-center sm:mt-10">
-        <div className="w-full rounded-2xl border border-canopy-border bg-canopy-card p-5 text-left">
-          <p className="text-[0.6875rem] font-semibold tracking-widest text-canopy-ink-faint uppercase">Next steps</p>
-          <p className="mt-2 text-sm leading-relaxed text-canopy-ink-muted">
+      <div className="mt-6 grid grid-cols-1 items-start gap-4 xl:grid-cols-[minmax(0,1.25fr)_minmax(0,1fr)]">
+        <div className="rounded-canopy-card border border-canopy-border bg-canopy-card shadow-canopy-rest">
+          <dl className="text-sm">
+            <div className="flex items-center justify-between gap-4 border-b border-canopy-border px-4 py-3.5 sm:px-5">
+              <dt className="text-canopy-ink-muted">Status</dt>
+              <dd>
+                <CanopyPill tone="success">Submitted to HR</CanopyPill>
+              </dd>
+            </div>
+            {submittedAt && (
+              <div className="flex items-center justify-between gap-4 border-b border-canopy-border px-4 py-3.5 sm:px-5">
+                <dt className="text-canopy-ink-muted">Submitted on</dt>
+                <dd className="font-canopy-mono text-[0.8125rem] text-canopy-ink">{formatDate(submittedAt)}</dd>
+              </div>
+            )}
+            {submissionId && (
+              <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-1 border-b border-canopy-border px-4 py-3.5 sm:px-5">
+                <dt className="text-canopy-ink-muted">Reference ID</dt>
+                <dd className="min-w-0 font-canopy-mono text-[0.8125rem] break-all text-canopy-ink">{submissionId}</dd>
+              </div>
+            )}
+          </dl>
+          <div className="px-4 py-4 sm:px-5">
+            <Link href="/dashboard" className={cn(canopyButtonVariants(), "w-full sm:w-auto")}>
+              Return to dashboard <ArrowRight className="size-4" aria-hidden />
+            </Link>
+          </div>
+        </div>
+
+        <section aria-labelledby="canopy-next-steps" className={canopyHelpPanelClass}>
+          <h2 id="canopy-next-steps" className="font-canopy-display text-[1.1875rem] leading-snug font-semibold text-canopy-ink">
+            Next steps
+          </h2>
+          <p className="mt-1 text-[0.8125rem] leading-relaxed text-canopy-ink-muted">
             HR will review your information and reach out if anything else is required. You can expect to hear from
             us within 2{"–"}3 business days.
           </p>
-          {submissionId && (
-            <p className="mt-3 text-xs text-canopy-ink-faint">
-              Reference ID: <span className="font-mono">{submissionId}</span>
-            </p>
-          )}
-        </div>
-
-        <Link
-          href="/dashboard"
-          className="mt-8 inline-flex h-12 items-center justify-center gap-2 rounded-full bg-canopy-accent px-6 text-sm font-medium text-canopy-on-accent transition-colors hover:bg-canopy-accent-hover"
-        >
-          Return to dashboard
-        </Link>
+        </section>
       </div>
     </div>
   );

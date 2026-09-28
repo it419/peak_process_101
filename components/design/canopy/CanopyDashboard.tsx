@@ -25,7 +25,7 @@ function CanopyDashboardSkeleton() {
     <div className="animate-pulse motion-reduce:animate-none">
       <div className="h-10 w-2/3 rounded bg-canopy-skeleton" />
       <div className="mt-3 h-4 w-1/2 rounded bg-canopy-skeleton" />
-      <div className="mt-6 grid gap-3.5 tablet:grid-cols-[1.6fr_1fr_1fr]">
+      <div className="mt-6 grid gap-3.5 xl:grid-cols-[1.6fr_1fr_1fr]">
         <div className="h-28 rounded-canopy-card bg-canopy-skeleton" />
         <div className="hidden h-28 rounded-canopy-card bg-canopy-skeleton sm:block" />
         <div className="hidden h-28 rounded-canopy-card bg-canopy-skeleton sm:block" />
@@ -186,9 +186,9 @@ export function CanopyDashboard() {
             </p>
 
             {/* KPI row */}
-            <div className="mt-6 grid gap-3.5 sm:grid-cols-2 tablet:grid-cols-[1.6fr_1fr_1fr]">
+            <div className="mt-6 grid grid-cols-2 gap-3 sm:gap-3.5 xl:grid-cols-[1.6fr_1fr_1fr]">
               <div
-                className={cn(panelClass, "flex items-center gap-4 px-4 py-3.5 sm:col-span-2 sm:gap-5 tablet:col-span-1")}
+                className={cn(panelClass, "col-span-2 flex items-center gap-4 px-4 py-3.5 sm:gap-5 xl:col-span-1")}
               >
                 <ProgressRing percent={percent} />
                 <div className="min-w-0">
@@ -210,20 +210,18 @@ export function CanopyDashboard() {
                 </div>
               </div>
 
-              <div className={cn(panelClass, "grid content-start gap-1.5 px-4.5 py-4")}>
+              <div className={cn(panelClass, "grid min-w-0 content-start gap-1.5 px-4 py-4 sm:px-4.5")}>
                 <p className={kpiLabelClass}>Required documents</p>
                 <p className="font-canopy-mono text-[1.625rem] leading-tight font-medium text-canopy-ink">
                   {REQUIRED_DOCS.length - remainingDocs}
                   <span className="text-canopy-ink-faint">/{REQUIRED_DOCS.length}</span>
                 </p>
                 <p className="text-xs text-canopy-ink-muted">
-                  {remainingDocs > 0
-                    ? `${remainingDocs} required document${remainingDocs > 1 ? "s" : ""} still need${remainingDocs > 1 ? "" : "s"} uploading`
-                    : "All required documents in"}
+                  {remainingDocs > 0 ? `${remainingDocs} still to upload` : "All received"}
                 </p>
               </div>
 
-              <div className={cn(panelClass, "grid content-start gap-1.5 px-4.5 py-4")}>
+              <div className={cn(panelClass, "grid min-w-0 content-start gap-1.5 px-4 py-4 sm:px-4.5")}>
                 <p className={kpiLabelClass}>Submission</p>
                 {submitted ? (
                   <>
@@ -253,7 +251,7 @@ export function CanopyDashboard() {
               </div>
             </div>
 
-            <div className="mt-4 grid items-start gap-4 tablet:grid-cols-[minmax(0,1.3fr)_minmax(0,1fr)]">
+            <div className="mt-4 grid grid-cols-1 items-start gap-4 xl:grid-cols-[minmax(0,1.3fr)_minmax(0,1fr)]">
               <section aria-labelledby="canopy-dash-checklist" className={cn(panelClass, "overflow-hidden")}>
                 <PanelHeader id="canopy-dash-checklist" title="Onboarding checklist" meta="Saves as you go" />
                 <CanopyStepTimeline variant="list" />

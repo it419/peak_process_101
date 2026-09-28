@@ -29,9 +29,9 @@ import type { JobDetail } from "@/types/recruitment";
 /* ------------------------------------------------------------------ */
 
 /** Numbered section header: forest circle + serif heading (Canopy apply/new-job pattern). */
-function SectionHeading({ n, children }: { n: number; children: ReactNode }) {
+function SectionHeading({ n, children, className }: { n: number; children: ReactNode; className?: string }) {
   return (
-    <div className="flex items-center gap-2.5">
+    <div className={cn("mb-1.5 flex items-center gap-2.5", className)}>
       <span
         className="inline-flex size-6.5 shrink-0 items-center justify-center rounded-full bg-canopy-forest text-xs font-bold text-white"
         aria-hidden
@@ -299,8 +299,16 @@ export function JobFormCanopy({ mode, jobId, initialJob, title, lead, aside }: J
         }
       />
 
-      <div className="mt-5 grid grid-cols-1 items-start gap-4 lg:grid-cols-[minmax(0,1fr)_20rem]">
-        <div className={cn(adminPanelClass, "flex flex-col gap-3 px-4 py-5.5 sm:px-6")}>
+      <div
+        className={cn(
+          "mt-5 grid grid-cols-1 items-start gap-4 lg:grid-cols-[minmax(0,1fr)_20rem]",
+          aside && "lg:grid-rows-[auto_1fr]",
+        )}
+      >
+        {/* The extra panel comes first on phones (status before a long form), top-right on desktop. */}
+        {aside && <div className="order-first lg:order-none lg:col-start-2">{aside}</div>}
+
+        <div className={cn(adminPanelClass, "flex flex-col gap-1.5 px-4 py-5.5 sm:px-6", aside && "lg:row-span-2 lg:row-start-1")}>
           <SectionHeading n={1}>Role basics</SectionHeading>
           <CanopyTextField label="Job title" required error={errors.title?.message} {...register("title")} />
           <div className="grid grid-cols-1 gap-x-4 sm:grid-cols-2 xl:grid-cols-3">
@@ -316,9 +324,7 @@ export function JobFormCanopy({ mode, jobId, initialJob, title, lead, aside }: J
             />
           </div>
 
-          <div className="mt-2">
-            <SectionHeading n={2}>Work &amp; pay</SectionHeading>
-          </div>
+          <SectionHeading n={2} className="mt-3">Work &amp; pay</SectionHeading>
           <SegmentedRadio
             legend="Work mode"
             required
@@ -360,11 +366,11 @@ export function JobFormCanopy({ mode, jobId, initialJob, title, lead, aside }: J
               {...register("salaryMax")}
             />
           </div>
-          <SwitchField label="Show salary range on the public job posting" registration={register("salaryPublic")} />
-
-          <div className="mt-5">
-            <SectionHeading n={3}>Description</SectionHeading>
+          <div className="mb-2">
+            <SwitchField label="Show salary range on the public job posting" registration={register("salaryPublic")} />
           </div>
+
+          <SectionHeading n={3} className="mt-3">Description</SectionHeading>
           <CanopyTextareaField
             label="Overview"
             rows={4}
@@ -394,10 +400,8 @@ export function JobFormCanopy({ mode, jobId, initialJob, title, lead, aside }: J
             {...register("benefits")}
           />
 
-          <div className="mt-2">
-            <SectionHeading n={4}>Skills &amp; education</SectionHeading>
-          </div>
-          <div className="grid grid-cols-1 gap-x-4 gap-y-5 sm:grid-cols-2">
+          <SectionHeading n={4} className="mt-3">Skills &amp; education</SectionHeading>
+          <div className="mb-3.5 grid grid-cols-1 gap-x-4 gap-y-3.5 sm:grid-cols-2">
             <SkillChipInput
               label="Required skills"
               skills={requiredSkills}
@@ -419,10 +423,9 @@ export function JobFormCanopy({ mode, jobId, initialJob, title, lead, aside }: J
           />
         </div>
 
-        <aside className="flex flex-col gap-3.5 lg:sticky lg:top-6">
-          {aside}
+        <aside className="flex flex-col gap-3.5 lg:sticky lg:top-6 lg:col-start-2">
 
-          <section className="flex flex-col gap-3 rounded-canopy-card bg-canopy-surface px-5 py-5.5 sm:px-6">
+          <section className="flex flex-col gap-2 rounded-canopy-card bg-canopy-surface px-5 py-5.5 sm:px-6">
             <h2 className="font-canopy-display text-[1.1875rem] font-semibold text-canopy-ink">Publishing</h2>
             <SegmentedRadio
               legend="Status"

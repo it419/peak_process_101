@@ -20,7 +20,12 @@ import { CanopySaveIndicator } from "./CanopySaveIndicator";
  *  where you are — while `right` (save status) stays visible. */
 export function CanopyPageBar({ trail, right }: { trail: string[]; right?: ReactNode }) {
   return (
-    <div className="mb-5 flex min-h-6 items-center justify-end gap-4 tablet:mb-6 tablet:min-h-9 tablet:justify-between">
+    <div
+      className={cn(
+        "mb-5 min-h-6 items-center justify-end gap-4 tablet:mb-6 tablet:flex tablet:min-h-9 tablet:justify-between",
+        right ? "flex" : "hidden",
+      )}
+    >
       <nav aria-label="Breadcrumb" className="hidden min-w-0 tablet:block">
         <ol className="flex items-center gap-1 text-[0.8125rem] text-canopy-ink-muted">
           {trail.map((crumb, i) => {
@@ -131,7 +136,7 @@ export function CanopyHelpPanel({
   children: ReactNode;
 }) {
   return (
-    <aside className={cn(canopyHelpPanelClass, "order-first tablet:order-none")}>
+    <aside className={cn(canopyHelpPanelClass, "order-first xl:order-none")}>
       {Icon && (
         <span className="mb-3.5 flex size-11 items-center justify-center rounded-canopy-card bg-canopy-card text-canopy-accent-text">
           <Icon className="size-5" aria-hidden />
@@ -195,13 +200,14 @@ export function CanopyStepShell({
           <h1 className={canopyPageTitleClass}>{title}</h1>
           <p className={canopyLeadClass}>{description ?? step.description}</p>
         </div>
-        <CanopyProgressBar percent={percent} className="w-full shrink-0 tablet:w-60 tablet:pb-2" />
+        {/* Below tablet the shell's sticky header carries the progress line. */}
+        <CanopyProgressBar percent={percent} className="hidden w-60 shrink-0 pb-2 tablet:grid" />
       </div>
 
       <div
         className={cn(
-          "mt-6 grid items-start gap-4",
-          aside ? "tablet:grid-cols-[minmax(0,1.25fr)_minmax(0,1fr)]" : "max-w-3xl",
+          "mt-6 grid grid-cols-1 items-start gap-4",
+          aside ? "xl:grid-cols-[minmax(0,1.25fr)_minmax(0,1fr)]" : "max-w-3xl",
         )}
       >
         <div className={canopyWorkPanelClass}>
