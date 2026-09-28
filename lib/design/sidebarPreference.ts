@@ -4,8 +4,7 @@ import { useSyncExternalStore } from "react";
 
 /**
  * Whether the app sidebar is collapsed to an icon rail. `null` means the
- * visitor hasn't chosen, and the sidebar picks a sensible default per page
- * (collapsed on onboarding steps, which already have their own step rail).
+ * visitor hasn't chosen yet (the sidebar is then expanded).
  * Stored in localStorage only — purely a presentation preference.
  */
 export type SidebarPreference = "expanded" | "collapsed" | null;

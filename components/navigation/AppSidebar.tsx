@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import {
   Briefcase,
+  Check,
   ChevronsLeft,
   ChevronsRight,
   ClipboardList,
@@ -19,8 +20,9 @@ import {
 import { PeakMark } from "@/components/Logo";
 import { useDesignStore, type DesignMode } from "@/lib/design/designStore";
 import { setSidebarPreference, useSidebarPreference } from "@/lib/design/sidebarPreference";
-import { getStepById } from "@/lib/onboarding/steps.config";
-import { useCurrentStepId } from "@/lib/store/selectors";
+import { getStepById, stepRegistry } from "@/lib/onboarding/steps.config";
+import { useCompletionPercent, useCurrentStepId, useFullName, useStepStatuses } from "@/lib/store/selectors";
+import type { StepStatus } from "@/types/onboarding";
 import { cn } from "@/lib/utils/cn";
 
 /* ------------------------------------------------------------------ */
@@ -40,6 +42,12 @@ interface SidebarTheme {
   divider: string;
   backdrop: string;
   font: string;
+  // Onboarding step list (shown inside the sidebar on onboarding pages)
+  step: Record<StepStatus, string>;
+  stepLine: string;
+  stepViewing: string;
+  track: string;
+  fill: string;
 }
 
 const THEMES: Record<DesignMode, SidebarTheme> = {
@@ -56,6 +64,16 @@ const THEMES: Record<DesignMode, SidebarTheme> = {
     divider: "border-ink-700",
     backdrop: "bg-ink-950/60",
     font: "font-sans",
+    step: {
+      completed: "border-gold-500 bg-gold-500 text-ink-950",
+      current: "border-ember-500 text-ember-500 ring-2 ring-ember-500/25",
+      blocked: "border-gold-500/70 text-gold-400",
+      upcoming: "border-ink-600 text-ink-400",
+    },
+    stepLine: "bg-ink-700",
+    stepViewing: "bg-ink-800 text-paper-50",
+    track: "bg-ink-700",
+    fill: "bg-ember-500",
   },
   dark: {
     surface: "bg-dark-surface border-dark-border text-dark-text",
@@ -70,6 +88,16 @@ const THEMES: Record<DesignMode, SidebarTheme> = {
     divider: "border-dark-border",
     backdrop: "bg-black/60",
     font: "font-sans",
+    step: {
+      completed: "border-dark-gold bg-dark-gold text-dark-bg",
+      current: "border-dark-gold text-dark-gold ring-2 ring-dark-gold/25",
+      blocked: "border-dark-copper text-dark-copper",
+      upcoming: "border-dark-border-strong text-dark-text-muted",
+    },
+    stepLine: "bg-dark-border",
+    stepViewing: "bg-dark-surface-2 text-dark-text",
+    track: "bg-dark-surface-2",
+    fill: "bg-dark-gold",
   },
   organic: {
     surface: "bg-organic-surface border-organic-border text-organic-ink",
@@ -84,6 +112,16 @@ const THEMES: Record<DesignMode, SidebarTheme> = {
     divider: "border-organic-border",
     backdrop: "bg-organic-ink/40",
     font: "font-organic-ui",
+    step: {
+      completed: "border-organic-accent bg-organic-accent text-organic-on-accent",
+      current: "border-organic-accent bg-organic-card text-organic-accent-text ring-2 ring-organic-accent/20",
+      blocked: "border-organic-gold bg-organic-card text-organic-gold",
+      upcoming: "border-organic-border-strong bg-organic-card text-organic-ink-faint",
+    },
+    stepLine: "bg-organic-border",
+    stepViewing: "bg-organic-card text-organic-ink",
+    track: "bg-organic-surface-2",
+    fill: "bg-organic-accent",
   },
 };
 
@@ -203,6 +241,93 @@ function NavLink({
   );
 }
 
+const STEP_STATUS_LABEL: Record<StepStatus, string> = {
+  completed: "complete",
+  current: "in progress",
+  blocked: "in progress",
+  upcoming: "not started",
+};
+
+/** The onboarding steps and progress, nested under "Onboarding" while on an
+ *  onboarding page. Replaces the separate step rail the page shells used to
+ *  render, so there is one navigation column instead of two. */
+function OnboardingSteps({
+  theme,
+  compact,
+  pathname,
+  onNavigate,
+}: {
+  theme: SidebarTheme;
+  compact: boolean;
+  pathname: string;
+  onNavigate?: () => void;
+}) {
+  const statuses = useStepStatuses();
+  const percent = useCompletionPercent();
+
+  return (
+    <div className={cn(compact ? "mt-2" : "mt-3 mb-1 ml-5 border-l pl-3", theme.divider)}>
+      {!compact && (
+        <div className="mb-3 pr-1">
+          <div className={cn("flex items-baseline justify-between text-[0.6875rem] font-semibold tracking-widest uppercase", theme.section)}>
+            <span>Progress</span>
+            <span className="tabular-nums">{percent}%</span>
+          </div>
+          <div
+            className={cn("mt-1.5 h-1 overflow-hidden rounded-full", theme.track)}
+            role="progressbar"
+            aria-label="Onboarding progress"
+            aria-valuenow={percent}
+            aria-valuemin={0}
+            aria-valuemax={100}
+          >
+            <div className={cn("h-full rounded-full transition-[width] duration-500", theme.fill)} style={{ width: `${percent}%` }} />
+          </div>
+        </div>
+      )}
+      <ol aria-label="Onboarding steps" className={cn("flex flex-col", compact ? "items-center gap-1.5" : "gap-0.5")}>
+        {stepRegistry.map((step, index) => {
+          const status = statuses[step.id] ?? "upcoming";
+          const href = `/onboarding/${step.slug}`;
+          const viewing = pathname === href;
+          const marker = (
+            <span
+              aria-hidden
+              className={cn(
+                "flex shrink-0 items-center justify-center rounded-full border text-[0.6875rem] font-semibold tabular-nums",
+                compact ? "size-7" : "size-5",
+                theme.step[status],
+              )}
+            >
+              {status === "completed" ? <Check className={compact ? "size-3.5" : "size-3"} strokeWidth={3} /> : index + 1}
+            </span>
+          );
+          return (
+            <li key={step.id}>
+              <Link
+                href={href}
+                onClick={onNavigate}
+                aria-current={viewing ? "step" : undefined}
+                aria-label={`Step ${index + 1}: ${step.label}, ${STEP_STATUS_LABEL[status]}`}
+                title={compact ? `${index + 1}. ${step.label}` : undefined}
+                className={cn(
+                  "flex items-center rounded-lg text-[0.8125rem] transition-colors duration-150 outline-none focus-visible:outline-2 focus-visible:outline-offset-2",
+                  compact ? "size-9 justify-center" : "h-8 gap-2.5 px-2",
+                  viewing ? cn(theme.stepViewing, "font-medium") : theme.item,
+                  theme.focus,
+                )}
+              >
+                {marker}
+                {!compact && <span className="truncate">{step.shortLabel}</span>}
+              </Link>
+            </li>
+          );
+        })}
+      </ol>
+    </div>
+  );
+}
+
 function NavBody({
   theme,
   compact,
@@ -217,6 +342,8 @@ function NavBody({
   footer?: ReactNode;
 }) {
   const sections = useNavSections();
+  const fullName = useFullName();
+  const showName = Boolean(fullName) && !compact && (pathname === "/dashboard" || pathname.startsWith("/onboarding"));
   return (
     <>
       <nav aria-label="Main" className="mt-8 flex flex-1 flex-col gap-7 overflow-y-auto">
@@ -233,6 +360,9 @@ function NavBody({
               {section.items.map((item) => (
                 <li key={item.label}>
                   <NavLink item={item} theme={theme} compact={compact} pathname={pathname} onNavigate={onNavigate} />
+                  {item.label === "Onboarding" && pathname.startsWith("/onboarding/") && (
+                    <OnboardingSteps theme={theme} compact={compact} pathname={pathname} onNavigate={onNavigate} />
+                  )}
                 </li>
               ))}
             </ul>
@@ -240,6 +370,12 @@ function NavBody({
         ))}
       </nav>
       <div className={cn("mt-6 flex flex-col gap-1 border-t pt-4", theme.divider)}>
+        {showName && (
+          <div className="mb-2 px-3">
+            <p className={cn("text-[0.6875rem] font-semibold tracking-widest uppercase", theme.section)}>Signed in as</p>
+            <p className="mt-0.5 truncate text-sm font-medium">{fullName}</p>
+          </div>
+        )}
         <NavLink item={CAREERS_ITEM} theme={theme} compact={compact} pathname={pathname} onNavigate={onNavigate} />
         {footer}
       </div>
@@ -253,6 +389,8 @@ function NavBody({
 
 /**
  * App navigation for internal pages (dashboard, onboarding, HR admin).
+ * On onboarding pages it also carries the step list and progress, so the
+ * page shells no longer render a step rail of their own on desktop.
  * Desktop: a sticky left sidebar that collapses to an icon rail.
  * Below the tablet breakpoint: a slim top bar whose menu button opens the
  * same navigation as a slide-in drawer. Styles follow the active design.
@@ -262,9 +400,7 @@ export function AppSidebar() {
   const theme = THEMES[mode];
   const pathname = usePathname();
   const preference = useSidebarPreference();
-  // Onboarding steps already have a step rail in two of the designs, so the
-  // sidebar starts as an icon rail there unless the visitor chose otherwise.
-  const collapsed = preference ? preference === "collapsed" : pathname.startsWith("/onboarding/");
+  const collapsed = preference === "collapsed";
 
   const [drawerOpen, setDrawerOpen] = useState(false);
   const reduceMotion = useReducedMotion();

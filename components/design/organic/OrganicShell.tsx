@@ -22,7 +22,9 @@ export function OrganicShell({ children }: { children: ReactNode }) {
 
   return (
     <div className="min-h-screen bg-organic-bg font-organic-sans">
-      <header className="sticky top-0 z-20 border-b border-organic-border bg-organic-bg/95 backdrop-blur">
+      {/* Below the tablet breakpoint only: on desktop the step list and
+          progress live in the app sidebar (AppSidebar). */}
+      <header className="sticky top-0 z-20 border-b border-organic-border bg-organic-bg/95 backdrop-blur tablet:hidden">
         <div className="mx-auto flex max-w-3xl items-center justify-between gap-4 px-5 py-4 sm:px-8">
           <OrganicWordmark />
           <div className="hidden shrink-0 text-right sm:block">
