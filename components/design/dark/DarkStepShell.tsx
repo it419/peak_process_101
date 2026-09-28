@@ -53,7 +53,7 @@ export function DarkStepShell({
 
       <div
         className={cn(
-          "mt-6 flex items-center gap-4",
+          "mt-6 flex flex-wrap items-center gap-4",
           !hideBack && backSlug ? "justify-between" : "justify-end",
         )}
       >

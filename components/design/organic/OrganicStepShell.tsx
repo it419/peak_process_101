@@ -59,7 +59,7 @@ export function OrganicStepShell({
 
       <div
         className={cn(
-          "mt-10 flex items-center gap-4 sm:pl-10 lg:pl-16",
+          "mt-10 flex flex-wrap items-center gap-4 sm:pl-10 lg:pl-16",
           !hideBack && backSlug ? "justify-between" : "justify-end",
         )}
       >

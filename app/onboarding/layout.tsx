@@ -1,5 +1,10 @@
 import { OnboardingShellSwitcher } from "@/components/design/OnboardingShellSwitcher";
+import { AppFrame } from "@/components/navigation/AppFrame";
 
 export default function OnboardingLayout({ children }: LayoutProps<"/onboarding">) {
-  return <OnboardingShellSwitcher>{children}</OnboardingShellSwitcher>;
+  return (
+    <AppFrame>
+      <OnboardingShellSwitcher>{children}</OnboardingShellSwitcher>
+    </AppFrame>
+  );
 }
