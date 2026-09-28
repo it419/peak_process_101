@@ -8,7 +8,7 @@ export function ApplicationConfirmationCanopy({ jobTitle, reference }: { jobTitl
   return (
     <CanopyCareersFrame>
       <CareersBand className="flex flex-col items-center py-10 text-center sm:py-12">
-        <span className="flex size-12 items-center justify-center rounded-full bg-canopy-forest text-canopy-forest-gold">
+        <span className="flex size-12 items-center justify-center rounded-full bg-canopy-forest text-canopy-forest-gold ring-1 ring-canopy-accent/40 ring-inset">
           <Check className="size-6" strokeWidth={2.5} aria-hidden />
         </span>
         <p className="canopy-type-eyebrow mt-6 text-canopy-accent-text">Application received</p>

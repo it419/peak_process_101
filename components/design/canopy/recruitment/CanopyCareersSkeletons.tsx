@@ -36,7 +36,7 @@ function JobRowSkeleton() {
   return (
     <div
       aria-hidden
-      className="flex items-center gap-3 max-tablet:justify-between max-tablet:rounded-canopy-card max-tablet:border max-tablet:border-canopy-border max-tablet:bg-canopy-card max-tablet:p-3.5 max-tablet:shadow-canopy-rest tablet:grid tablet:h-16 tablet:grid-cols-[34%_1fr_1fr_1fr_13rem] tablet:gap-0 tablet:border-b tablet:border-canopy-border tablet:last:border-b-0"
+      className="flex items-center gap-3 max-tablet:justify-between max-tablet:rounded-canopy-card max-tablet:border max-tablet:border-canopy-border max-tablet:bg-canopy-card max-tablet:min-h-[4.5rem] max-tablet:p-3.5 max-tablet:shadow-canopy-rest tablet:grid tablet:h-[4.625rem] tablet:grid-cols-[34%_1fr_1fr_1fr_13rem] tablet:gap-0 tablet:border-b tablet:border-canopy-border tablet:last:border-b-0"
     >
       <div className="min-w-0 tablet:pr-4 tablet:pl-5">
         <Bone className="h-4 w-44 max-w-full" />
@@ -67,7 +67,7 @@ export function CanopyJobsListSkeleton() {
         teams={
           <div aria-hidden className="grid grid-cols-2 gap-2.5">
             {[0, 1, 2, 3].map((i) => (
-              <div key={i} className="flex h-[4.4375rem] flex-col justify-center gap-2 rounded-canopy-card bg-canopy-card px-4 shadow-canopy-rest">
+              <div key={i} className="flex h-[4.7rem] flex-col justify-center gap-2 rounded-canopy-card bg-canopy-card px-4 shadow-canopy-rest">
                 <Bone className="h-4 w-24" />
                 <Bone className="h-3 w-12" />
               </div>
@@ -92,7 +92,7 @@ export function CanopyJobsListSkeleton() {
           <div aria-hidden className="h-9 rounded-canopy-control border border-canopy-border bg-canopy-card sm:w-48" />
         </div>
         <div className="mt-4 max-tablet:flex max-tablet:flex-col max-tablet:gap-2 tablet:overflow-hidden tablet:rounded-canopy-card tablet:border tablet:border-canopy-border tablet:bg-canopy-card tablet:shadow-canopy-rest">
-          <div aria-hidden className="h-[2.4375rem] border-b border-canopy-border bg-canopy-table-head max-tablet:hidden" />
+          <div aria-hidden className="h-[2.594rem] border-b border-canopy-border bg-canopy-table-head max-tablet:hidden" />
           {[0, 1, 2, 3].map((i) => (
             <JobRowSkeleton key={i} />
           ))}

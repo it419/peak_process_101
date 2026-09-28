@@ -13,7 +13,6 @@ import {
   careersContainer,
   experienceRange,
   filterControlClass,
-  panelClass,
   teamPillClass,
   typePillClass,
 } from "@/components/design/canopy/recruitment/careersUi";
@@ -234,7 +233,7 @@ function TeamChips({
             className={cn(
               "inline-flex h-8 max-w-full items-center gap-1.5 rounded-canopy-pill px-3 text-xs font-semibold transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-canopy-accent",
               active
-                ? "bg-canopy-forest text-white"
+                ? "bg-canopy-forest text-white ring-1 ring-canopy-accent/60 ring-inset"
                 : "border border-canopy-border-strong bg-canopy-card text-canopy-ink hover:border-canopy-accent",
             )}
           >

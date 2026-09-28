@@ -40,7 +40,7 @@ function FormSection({
       <div className="flex items-center gap-2.5">
         <span
           aria-hidden
-          className="flex size-6.5 shrink-0 items-center justify-center rounded-full bg-canopy-forest text-xs font-bold text-white"
+          className="flex size-6.5 shrink-0 items-center justify-center rounded-full bg-canopy-forest text-xs font-bold text-white ring-1 ring-canopy-accent/40 ring-inset"
         >
           {step}
         </span>
