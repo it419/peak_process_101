@@ -1,24 +1,28 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
-import { ArrowUpDown, Search } from "lucide-react";
+import { ArrowUpDown, ChevronDown, Search } from "lucide-react";
 import { cn } from "@/lib/utils/cn";
 import { applicationStatusLabel, APPLICATION_STATUS_OPTIONS } from "@/lib/recruitment/constants";
+import { canopyButtonVariants } from "@/components/design/canopy/ui/CanopyButton";
+import {
+  AdminPageHeading,
+  KbdHint,
+  StatusPill,
+  adminPanelClass,
+} from "@/components/design/canopy/recruitment/AdminShellCanopy";
 import type { ApplicationSummary } from "@/types/recruitment";
 
 function formatDate(iso: string): string {
   return new Date(iso).toLocaleDateString("en-IN", { day: "numeric", month: "short" });
 }
 
-const STATUS_DOT: Record<string, string> = {
-  applied: "bg-canopy-ink-faint",
-  under_review: "bg-canopy-gold",
-  shortlisted: "bg-canopy-gold",
-  interview: "bg-canopy-gold",
-  selected: "bg-canopy-success",
-  rejected: "bg-canopy-error",
-};
+/** Shared look for the toolbar's search, select and sort controls. */
+const controlClass =
+  "h-10 rounded-canopy-control border border-canopy-border-strong bg-canopy-card text-sm text-canopy-ink outline-none transition-[border-color,box-shadow] hover:border-canopy-ink-muted focus-visible:border-canopy-accent focus-visible:ring-3 focus-visible:ring-canopy-accent/20";
+
+const GRID = "xl:grid-cols-[minmax(0,2.2fr)_minmax(0,1fr)_minmax(0,0.9fr)_minmax(0,1.1fr)_auto]";
 
 export function AdminApplicationsListCanopy({
   jobTitle,
@@ -30,6 +34,20 @@ export function AdminApplicationsListCanopy({
   const [query, setQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [newestFirst, setNewestFirst] = useState(true);
+  const searchRef = useRef<HTMLInputElement>(null);
+
+  // "/" jumps to the search box, unless already typing somewhere.
+  useEffect(() => {
+    function onKey(e: globalThis.KeyboardEvent) {
+      if (e.key !== "/" || e.metaKey || e.ctrlKey || e.altKey) return;
+      const target = e.target as HTMLElement | null;
+      if (target && (target.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(target.tagName))) return;
+      e.preventDefault();
+      searchRef.current?.focus();
+    }
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, []);
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -46,75 +64,144 @@ export function AdminApplicationsListCanopy({
 
   return (
     <div>
-      <h1 className="font-canopy-display text-2xl font-semibold tracking-wide text-canopy-ink uppercase">{jobTitle}</h1>
-      <p className="mt-1 text-sm text-canopy-ink-muted">
-        {applications.length} application{applications.length === 1 ? "" : "s"}
-      </p>
+      <AdminPageHeading
+        title={jobTitle}
+        lead={
+          <>
+            <span className="canopy-mono font-medium text-canopy-ink">{applications.length}</span> application
+            {applications.length === 1 ? "" : "s"}
+          </>
+        }
+      />
 
-      <div className="mt-6 flex flex-wrap items-center gap-3">
-        <div className="relative max-w-xs flex-1">
-          <Search className="pointer-events-none absolute left-4 top-1/2 size-4 -translate-y-1/2 text-canopy-ink-faint" aria-hidden />
+      <div className="mt-5.5 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center">
+        <div className="relative w-full sm:w-72">
+          <Search
+            className="pointer-events-none absolute top-1/2 left-3.5 size-4 -translate-y-1/2 text-canopy-ink-faint"
+            aria-hidden
+          />
           <input
+            ref={searchRef}
+            type="search"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Search candidates…"
-            className="h-11 w-full rounded-xl border border-canopy-border bg-canopy-card pl-10 pr-3 text-sm text-canopy-ink placeholder:text-canopy-ink-faint outline-none focus:border-canopy-accent"
+            aria-label="Search candidates"
+            aria-keyshortcuts="/"
+            className={cn(controlClass, "w-full pr-10 pl-10 placeholder:text-canopy-ink-faint [&::-webkit-search-cancel-button]:hidden")}
           />
+          <span className="absolute top-1/2 right-3 -translate-y-1/2">
+            <KbdHint>/</KbdHint>
+          </span>
         </div>
-        <select
-          value={statusFilter}
-          onChange={(e) => setStatusFilter(e.target.value)}
-          className="h-11 rounded-xl border border-canopy-border bg-canopy-card px-3 text-sm text-canopy-ink outline-none focus:border-canopy-accent"
-        >
-          <option value="all">All Statuses</option>
-          {APPLICATION_STATUS_OPTIONS.map((opt) => (
-            <option key={opt.value} value={opt.value}>
-              {opt.label}
-            </option>
-          ))}
-        </select>
-        <button
-          type="button"
-          onClick={() => setNewestFirst((v) => !v)}
-          className="flex h-11 items-center gap-1.5 rounded-xl border border-canopy-border bg-canopy-card px-3 text-sm text-canopy-ink hover:border-canopy-accent"
-        >
-          <ArrowUpDown className="size-3.5" aria-hidden />
-          {newestFirst ? "Newest first" : "Oldest first"}
-        </button>
+        <div className="flex gap-3 sm:ml-auto">
+          <div className="relative min-w-0 flex-1 sm:flex-none">
+            <select
+              value={statusFilter}
+              onChange={(e) => setStatusFilter(e.target.value)}
+              aria-label="Filter by status"
+              className={cn(controlClass, "w-full appearance-none pr-9 pl-3 font-semibold")}
+            >
+              <option value="all">All Statuses</option>
+              {APPLICATION_STATUS_OPTIONS.map((opt) => (
+                <option key={opt.value} value={opt.value}>
+                  {opt.label}
+                </option>
+              ))}
+            </select>
+            <ChevronDown
+              className="pointer-events-none absolute top-1/2 right-3 size-4 -translate-y-1/2 text-canopy-ink-faint"
+              aria-hidden
+            />
+          </div>
+          <button
+            type="button"
+            onClick={() => setNewestFirst((v) => !v)}
+            className={cn(controlClass, "flex shrink-0 items-center gap-1.5 px-3 font-semibold")}
+          >
+            <ArrowUpDown className="size-3.5 text-canopy-ink-faint" aria-hidden />
+            {newestFirst ? "Newest first" : "Oldest first"}
+          </button>
+        </div>
       </div>
 
       {filtered.length === 0 ? (
-        <p className="mt-10 text-sm text-canopy-ink-muted">
-          {applications.length === 0 ? "No one has applied yet." : "No applications match your filters."}
-        </p>
+        <div className={cn(adminPanelClass, "mt-3 px-6 py-12 text-center")}>
+          <p className="font-canopy-display text-xl font-semibold text-canopy-ink">
+            {applications.length === 0 ? "No applications yet" : "Nothing matches"}
+          </p>
+          <p className="mt-1.5 text-sm text-canopy-ink-muted">
+            {applications.length === 0 ? "No one has applied yet." : "No applications match your filters."}
+          </p>
+        </div>
       ) : (
-        <div className="mt-6 rounded-[1.75rem] bg-canopy-surface">
-          {filtered.map((app, index) => (
-            <div
-              key={app.id}
-              className={cn(
-                "flex flex-col gap-3 px-6 py-5 sm:flex-row sm:items-center sm:justify-between",
-                index !== filtered.length - 1 && "border-b border-canopy-border",
-              )}
-            >
-              <div className="min-w-0">
-                <p className="font-canopy-display text-base font-semibold text-canopy-ink">{app.candidateName}</p>
-                <p className="mt-1 text-sm text-canopy-ink-muted">
-                  {app.experienceYears != null ? `${app.experienceYears} years experience · ` : ""}
-                  Applied {formatDate(app.appliedAt)}
-                </p>
-              </div>
-              <div className="flex shrink-0 items-center gap-5">
-                <span className="flex items-center gap-2 text-sm font-medium text-canopy-ink">
-                  <span className={cn("size-1.5 rounded-full", STATUS_DOT[app.status])} aria-hidden />
-                  {applicationStatusLabel(app.status)}
-                </span>
-                <Link href={`/admin/applications/${app.id}`} className="text-sm font-medium text-canopy-accent-text hover:underline">
-                  View Application
-                </Link>
-              </div>
-            </div>
-          ))}
+        <div className={cn(adminPanelClass, "mt-3 overflow-hidden")}>
+          <div
+            className={cn(
+              "hidden items-center gap-4 border-b border-canopy-border bg-canopy-table-head px-5 py-3 text-[0.6875rem] font-bold tracking-widest text-canopy-ink-muted uppercase xl:grid",
+              GRID,
+            )}
+            aria-hidden
+          >
+            <span>Candidate</span>
+            <span>Experience</span>
+            <span>Applied</span>
+            <span>Status</span>
+            <span className="w-36" />
+          </div>
+          <ul>
+            {filtered.map((app) => (
+              <li
+                key={app.id}
+                className={cn(
+                  "grid grid-cols-[minmax(0,1fr)_auto] items-center gap-x-4 gap-y-2 border-b border-canopy-border px-4 py-4 last:border-b-0 sm:px-5 xl:py-3",
+                  GRID,
+                )}
+              >
+                <div className="min-w-0">
+                  <Link
+                    href={`/admin/applications/${app.id}`}
+                    className="rounded-sm text-[0.9375rem] font-bold text-canopy-ink hover:text-canopy-accent-text focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-canopy-accent"
+                  >
+                    {app.candidateName}
+                  </Link>
+                  <p className="mt-0.5 truncate text-[0.8125rem] text-canopy-ink-muted">{app.email}</p>
+                </div>
+
+                {/* Mobile: experience + applied date share one line under the name. */}
+                <div className="col-span-2 row-start-2 flex flex-wrap gap-x-4 text-[0.8125rem] text-canopy-ink-muted xl:contents">
+                  <span>
+                    {app.experienceYears != null ? (
+                      <>
+                        <span className="canopy-mono text-canopy-ink">{app.experienceYears}</span> years experience
+                      </>
+                    ) : (
+                      <span className="text-canopy-ink-faint">—</span>
+                    )}
+                  </span>
+                  <span>
+                    <span className="xl:hidden">Applied </span>
+                    <span className="canopy-mono text-canopy-ink">{formatDate(app.appliedAt)}</span>
+                  </span>
+                </div>
+
+                <div className="col-start-2 row-start-1 justify-self-end xl:col-start-auto xl:row-start-auto xl:justify-self-start">
+                  <StatusPill kind="application" status={app.status}>
+                    {applicationStatusLabel(app.status)}
+                  </StatusPill>
+                </div>
+
+                <div className="col-span-2 xl:col-span-1 xl:w-36 xl:text-right">
+                  <Link
+                    href={`/admin/applications/${app.id}`}
+                    className={canopyButtonVariants({ variant: "secondary", size: "sm", className: "h-8.5 px-3" })}
+                  >
+                    View Application
+                  </Link>
+                </div>
+              </li>
+            ))}
+          </ul>
         </div>
       )}
     </div>

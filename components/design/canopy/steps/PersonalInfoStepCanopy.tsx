@@ -1,12 +1,13 @@
 "use client";
 
+import { ShieldCheck } from "lucide-react";
 import { usePersonalInfoStepLogic } from "@/hooks/steps/usePersonalInfoStepLogic";
 import { genderOptions } from "@/lib/schemas/shared";
 import { CanopyTextField } from "../ui/CanopyTextField";
 import { CanopySelectField } from "../ui/CanopySelectField";
 import { CanopyTextareaField } from "../ui/CanopyTextareaField";
 import { CanopyMaskedField } from "../ui/CanopyMaskedField";
-import { CanopyStepShell } from "../CanopyStepShell";
+import { CanopyHelpPanel, CanopyStepShell } from "../CanopyStepShell";
 import { CanopyFormSection } from "../CanopyFormSection";
 
 export function PersonalInfoStepCanopy() {
@@ -19,6 +20,11 @@ export function PersonalInfoStepCanopy() {
       description="Let’s get your information in place."
       onContinue={onContinue}
       isSubmitting={isSubmitting}
+      aside={
+        <CanopyHelpPanel icon={ShieldCheck} title="Your privacy">
+          Your information is encrypted and accessible only to authorized HR personnel.
+        </CanopyHelpPanel>
+      }
     >
       <CanopyFormSection title="Basic information" first>
         <CanopyTextField
@@ -83,10 +89,7 @@ export function PersonalInfoStepCanopy() {
         </div>
       </CanopyFormSection>
 
-      <CanopyFormSection
-        title="Government information"
-        description="Your information is encrypted and accessible only to authorized HR personnel."
-      >
+      <CanopyFormSection title="Government information">
         <CanopyMaskedField
           control={control}
           name="governmentIds.aadhaar"

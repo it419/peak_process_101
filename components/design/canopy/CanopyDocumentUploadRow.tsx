@@ -5,6 +5,7 @@ import { Check, FileText, RotateCw, TriangleAlert, Upload, X } from "lucide-reac
 import { cn } from "@/lib/utils/cn";
 import { formatBytes } from "@/lib/utils/formatBytes";
 import { CanopyButton } from "./ui/CanopyButton";
+import { CanopyPill } from "./CanopyStepShell";
 import type { DocumentMeta, DocumentRequirement } from "@/types/onboarding";
 
 interface CanopyDocumentUploadRowProps {
@@ -26,9 +27,9 @@ function statusVisual(status: DocumentMeta["status"] | "pending"): { bg: string;
     case "error":
       return { bg: "bg-canopy-error-tint text-canopy-error", icon: <TriangleAlert className="size-4" /> };
     case "uploading":
-      return { bg: "bg-canopy-accent/15 text-canopy-accent-text", icon: <Upload className="size-4" /> };
+      return { bg: "bg-canopy-accent-tint text-canopy-accent-text", icon: <Upload className="size-4" /> };
     default:
-      return { bg: "bg-canopy-surface-2 text-canopy-ink-faint", icon: <FileText className="size-4" /> };
+      return { bg: "bg-canopy-surface text-canopy-ink-muted", icon: <FileText className="size-4" /> };
   }
 }
 
@@ -47,25 +48,25 @@ export function CanopyDocumentUploadRow({ requirement, meta, progress, onUpload,
   }
 
   return (
-    <div className="flex flex-col gap-3 border-b border-canopy-border py-5 last:border-b-0 sm:flex-row sm:items-start sm:justify-between">
-      <div className="flex min-w-0 items-start gap-3.5">
-        <span className={cn("mt-0.5 flex size-9 shrink-0 items-center justify-center rounded-full", bg)}>{icon}</span>
+    <div className="flex flex-col gap-3 border-b border-canopy-border py-4 first:pt-0 last:border-b-0 last:pb-0 sm:flex-row sm:items-center sm:justify-between">
+      <div className="flex min-w-0 items-start gap-3">
+        <span className={cn("flex size-9 shrink-0 items-center justify-center rounded-canopy-control", bg)}>{icon}</span>
         <div className="min-w-0">
-          <p className="font-medium text-canopy-ink">
+          <p className="text-sm font-bold text-canopy-ink">
             {requirement.label}
-            <span className="ml-2 text-sm font-normal text-canopy-ink-faint">
+            <span className="ml-2 text-xs font-medium text-canopy-ink-faint">
               {requirement.providedByHR ? "Provided by HR" : requirement.required ? "Required" : "Optional"}
             </span>
           </p>
 
-          <p className="mt-0.5 text-sm text-canopy-ink-muted">
+          <p className="mt-0.5 text-[0.8125rem] wrap-break-word text-canopy-ink-muted">
             {status === "uploaded" && meta
               ? `${meta.fileName} · ${formatBytes(meta.fileSize)}`
               : requirement.description}
           </p>
 
           {status === "uploading" && (
-            <div className="mt-2.5 h-1 max-w-56 overflow-hidden rounded-full bg-canopy-surface-2">
+            <div className="mt-2 h-1 max-w-56 overflow-hidden rounded-canopy-pill bg-canopy-surface-2">
               <div
                 className="h-full rounded-full bg-canopy-accent transition-[width] duration-300"
                 style={{ width: `${progress ?? 0}%` }}
@@ -74,22 +75,27 @@ export function CanopyDocumentUploadRow({ requirement, meta, progress, onUpload,
           )}
 
           {status === "error" && meta?.errorMessage && (
-            <p className="mt-1.5 flex items-center gap-1.5 text-sm text-canopy-error">
+            <p className="mt-1.5 flex items-center gap-1.5 text-[0.8125rem] text-canopy-error">
               <TriangleAlert className="size-3.5 shrink-0" /> {meta.errorMessage}
             </p>
           )}
 
           {(status === "pending" || status === "error") && requirement.acceptedFormats.length > 0 && (
-            <p className="mt-1 text-xs text-canopy-ink-faint">
+            <p className="mt-1 font-canopy-mono text-[0.6875rem] text-canopy-ink-faint">
               {requirement.acceptedFormats.join(", ")} · up to {requirement.maxSizeMB}MB
             </p>
           )}
         </div>
       </div>
 
-      <div className="flex shrink-0 items-center gap-2 pl-[3.125rem] sm:pl-0">
-        {requirement.providedByHR ? null : status === "uploaded" ? (
+      <div className="flex shrink-0 items-center gap-2 pl-12 sm:pl-0">
+        {requirement.providedByHR ? (
+          status === "provided" ? <CanopyPill tone="success">Ready</CanopyPill> : null
+        ) : status === "uploaded" ? (
           <>
+            <CanopyPill tone="success" className="mr-1">
+              Uploaded
+            </CanopyPill>
             <CanopyButton type="button" variant="secondary" size="sm" onClick={() => inputRef.current?.click()}>
               Replace
             </CanopyButton>

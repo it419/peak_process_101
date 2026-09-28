@@ -1,14 +1,151 @@
 "use client";
 
-import type { ReactNode } from "react";
+import { Fragment, type ReactNode } from "react";
 import { useRouter } from "next/navigation";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, type LucideIcon } from "lucide-react";
 import { cn } from "@/lib/utils/cn";
-import { getAdjacentSlug, getStepIndex, stepRegistry } from "@/lib/onboarding/steps.config";
+import { getAdjacentSlug, getStepById, getStepIndex, stepRegistry } from "@/lib/onboarding/steps.config";
+import { useCompletionPercent } from "@/lib/store/selectors";
 import type { StepId } from "@/types/onboarding";
 import { CanopyButton } from "./ui/CanopyButton";
 import { CanopySaveIndicator } from "./CanopySaveIndicator";
-import { CurveDivider } from "./CurveDivider";
+
+/* ------------------------------------------------------------------ */
+/* Page chrome shared by the onboarding steps, dashboard and completion */
+/* screen (Ledger structure: breadcrumbs + status, then the heading).   */
+/* ------------------------------------------------------------------ */
+
+/** Breadcrumb row at the top of app screens. The trail is desktop-only —
+ *  below the tablet breakpoint the shell's compact header already says
+ *  where you are — while `right` (save status) stays visible. */
+export function CanopyPageBar({ trail, right }: { trail: string[]; right?: ReactNode }) {
+  return (
+    <div className="mb-5 flex min-h-6 items-center justify-end gap-4 tablet:mb-6 tablet:min-h-9 tablet:justify-between">
+      <nav aria-label="Breadcrumb" className="hidden min-w-0 tablet:block">
+        <ol className="flex items-center gap-1 text-[0.8125rem] text-canopy-ink-muted">
+          {trail.map((crumb, i) => {
+            const isLast = i === trail.length - 1;
+            return (
+              <Fragment key={crumb}>
+                <li
+                  className={cn("truncate", isLast && "font-semibold text-canopy-ink")}
+                  aria-current={isLast ? "page" : undefined}
+                >
+                  {crumb}
+                </li>
+                {!isLast && (
+                  <li aria-hidden className="text-canopy-ink-faint">
+                    /
+                  </li>
+                )}
+              </Fragment>
+            );
+          })}
+        </ol>
+      </nav>
+      {right && <div className="shrink-0 text-right">{right}</div>}
+    </div>
+  );
+}
+
+export function CanopyEyebrow({ children, className }: { children: ReactNode; className?: string }) {
+  return (
+    <p className={cn("canopy-type-eyebrow font-bold text-canopy-accent-text", className)}>{children}</p>
+  );
+}
+
+export const canopyPageTitleClass =
+  "font-canopy-display mt-2 text-[2rem] leading-[1.1] font-semibold tracking-[-0.015em] text-balance text-canopy-ink sm:text-[2.5rem]";
+
+export const canopyLeadClass = "mt-2.5 max-w-[47.5rem] text-[0.9375rem] leading-relaxed text-canopy-ink-muted sm:text-base";
+
+/** White work panel (hairline border, 12px corners). Below `sm` it drops
+ *  the frame so phone forms use the full width, as in the mobile mockup. */
+export const canopyWorkPanelClass =
+  "sm:rounded-canopy-card sm:border sm:border-canopy-border sm:bg-canopy-card sm:px-6 sm:py-5.5 sm:shadow-canopy-rest";
+
+/** Sage guidance panel ("Before you begin", "Why we ask"…). */
+export const canopyHelpPanelClass = "rounded-canopy-card bg-canopy-surface px-5 py-5 sm:px-6 sm:py-5.5";
+
+/** Status pills: success = pine tint, needs attention = brass tint. */
+export const canopyPillClass = {
+  success: "bg-canopy-success-tint text-canopy-success",
+  attention: "bg-canopy-gold-tint text-canopy-gold",
+  neutral: "bg-canopy-surface-2/70 text-canopy-ink-muted",
+  error: "bg-canopy-error-tint text-canopy-error",
+} as const;
+
+export function CanopyPill({
+  tone,
+  children,
+  className,
+}: {
+  tone: keyof typeof canopyPillClass;
+  children: ReactNode;
+  className?: string;
+}) {
+  return (
+    <span
+      className={cn(
+        "inline-flex h-6 shrink-0 items-center rounded-canopy-pill px-2.5 text-xs font-bold whitespace-nowrap",
+        canopyPillClass[tone],
+        className,
+      )}
+    >
+      {children}
+    </span>
+  );
+}
+
+/** Slim overall-progress bar with the mono percentage above it. */
+export function CanopyProgressBar({ percent, className }: { percent: number; className?: string }) {
+  return (
+    <div className={cn("grid justify-items-end gap-2", className)}>
+      <span className="font-canopy-mono text-sm font-semibold text-canopy-accent-text">{percent}%</span>
+      <div
+        role="progressbar"
+        aria-label="Onboarding progress"
+        aria-valuemin={0}
+        aria-valuemax={100}
+        aria-valuenow={percent}
+        className="h-1.5 w-full overflow-hidden rounded-canopy-pill bg-canopy-surface-2"
+      >
+        <div
+          className="h-full rounded-canopy-pill bg-canopy-accent transition-[width] duration-500 motion-reduce:transition-none"
+          style={{ width: `${percent}%` }}
+        />
+      </div>
+    </div>
+  );
+}
+
+/** Sage help panel for a step's `aside` ("Why we ask" and similar). Keep the
+ *  copy short and factual. */
+export function CanopyHelpPanel({
+  icon: Icon,
+  title,
+  children,
+}: {
+  icon?: LucideIcon;
+  title: string;
+  children: ReactNode;
+}) {
+  return (
+    <aside className={cn(canopyHelpPanelClass, "order-first tablet:order-none")}>
+      {Icon && (
+        <span className="mb-3.5 flex size-11 items-center justify-center rounded-canopy-card bg-canopy-card text-canopy-accent-text">
+          <Icon className="size-5" aria-hidden />
+        </span>
+      )}
+      <h2 className="font-canopy-display text-[1.1875rem] leading-snug font-semibold text-canopy-ink">{title}</h2>
+      <div className="mt-1 text-[0.8125rem] leading-relaxed text-canopy-ink-muted">{children}</div>
+    </aside>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/* Step shell                                                           */
+/* ------------------------------------------------------------------ */
 
 interface CanopyStepShellProps {
   stepId: StepId;
@@ -20,6 +157,8 @@ interface CanopyStepShellProps {
   continueDisabled?: boolean;
   isSubmitting?: boolean;
   hideBack?: boolean;
+  /** Optional sage help panel beside the form (desktop) / below it (mobile). */
+  aside?: ReactNode;
 }
 
 export function CanopyStepShell({
@@ -28,49 +167,64 @@ export function CanopyStepShell({
   description,
   children,
   onContinue,
-  continueLabel = "Continue",
+  continueLabel = "Save & continue",
   continueDisabled,
   isSubmitting,
   hideBack,
+  aside,
 }: CanopyStepShellProps) {
   const router = useRouter();
   const backSlug = getAdjacentSlug(stepId, -1);
   const index = getStepIndex(stepId);
+  const step = getStepById(stepId);
+  const percent = useCompletionPercent();
+  const showBack = !hideBack && backSlug;
 
   return (
     <div>
-      <div className="rounded-[1.75rem] bg-canopy-surface px-6 py-10 sm:px-12 sm:py-14">
-        <div className="flex items-start justify-between gap-4">
-          <p className="text-[0.8125rem] font-semibold tracking-widest text-canopy-accent-text uppercase">
-            Step {String(index + 1).padStart(2, "0")} of {String(stepRegistry.length).padStart(2, "0")}
-          </p>
-          <CanopySaveIndicator className="hidden sm:block" />
-        </div>
-        <h1 className="font-canopy-display mt-3 text-[2rem] leading-[1.1] font-semibold text-canopy-ink sm:text-[2.5rem]">
-          {title}
-        </h1>
-        {description && (
-          <p className="mt-4 max-w-lg text-[0.9375rem] leading-relaxed text-canopy-ink-muted">{description}</p>
-        )}
-      </div>
-      <CurveDivider fill="var(--color-canopy-surface)" className="-mt-px h-8 sm:h-12 md:h-16" />
+      <CanopyPageBar
+        trail={["Onboarding", step.label]}
+        right={<CanopySaveIndicator idleLabel="Saves automatically" />}
+      />
 
-      <div className="mt-2 sm:mt-4 sm:pl-10 lg:pl-16">{children}</div>
+      <div className="flex flex-col gap-5 tablet:flex-row tablet:items-end tablet:justify-between tablet:gap-10">
+        <div className="min-w-0">
+          <CanopyEyebrow>
+            Step {index + 1} of {stepRegistry.length}
+          </CanopyEyebrow>
+          <h1 className={canopyPageTitleClass}>{title}</h1>
+          <p className={canopyLeadClass}>{description ?? step.description}</p>
+        </div>
+        <CanopyProgressBar percent={percent} className="w-full shrink-0 tablet:w-60 tablet:pb-2" />
+      </div>
 
       <div
         className={cn(
-          "mt-10 flex flex-wrap items-center gap-4 sm:pl-10 lg:pl-16",
-          !hideBack && backSlug ? "justify-between" : "justify-end",
+          "mt-6 grid items-start gap-4",
+          aside ? "tablet:grid-cols-[minmax(0,1.25fr)_minmax(0,1fr)]" : "max-w-3xl",
         )}
       >
-        {!hideBack && backSlug && (
-          <CanopyButton variant="secondary" type="button" onClick={() => router.push(`/onboarding/${backSlug}`)}>
-            <ArrowLeft className="size-4" aria-hidden /> Back
-          </CanopyButton>
-        )}
-        <CanopyButton type="button" onClick={onContinue} isLoading={isSubmitting} disabled={continueDisabled} showArrow>
-          {continueLabel}
-        </CanopyButton>
+        <div className={canopyWorkPanelClass}>
+          {children}
+
+          <div
+            className={cn(
+              "mt-6 flex flex-wrap items-center gap-3 border-t border-canopy-border pt-4",
+              showBack ? "justify-between" : "justify-end",
+            )}
+          >
+            {showBack && (
+              <CanopyButton variant="secondary" type="button" onClick={() => router.push(`/onboarding/${backSlug}`)}>
+                <ArrowLeft className="size-4" aria-hidden /> Back
+              </CanopyButton>
+            )}
+            <CanopyButton type="button" onClick={onContinue} isLoading={isSubmitting} disabled={continueDisabled} showArrow>
+              {continueLabel}
+            </CanopyButton>
+          </div>
+        </div>
+
+        {aside}
       </div>
     </div>
   );

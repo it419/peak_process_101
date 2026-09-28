@@ -1,37 +1,70 @@
 "use client";
 
 import type { ReactNode } from "react";
-import { Upload } from "lucide-react";
+import { FileText, Paperclip } from "lucide-react";
 import { useJobApplicationFormLogic } from "@/hooks/recruitment/useJobApplicationFormLogic";
 import { EDUCATION_OPTIONS } from "@/lib/recruitment/constants";
 import { CanopyCareersFrame } from "@/components/design/canopy/recruitment/CanopyCareersFrame";
 import {
   BackLink,
-  CareersHero,
+  CareersBand,
   JobSummaryCard,
   careersContainer,
   formatSalary,
+  panelClass,
+  softPanelClass,
 } from "@/components/design/canopy/recruitment/careersUi";
 import { CanopyTextField } from "@/components/design/canopy/ui/CanopyTextField";
 import { CanopyTextareaField } from "@/components/design/canopy/ui/CanopyTextareaField";
 import { CanopySelectField } from "@/components/design/canopy/ui/CanopySelectField";
 import { CanopyButton, canopyButtonVariants } from "@/components/design/canopy/ui/CanopyButton";
-import { CurveDivider } from "@/components/design/canopy/CurveDivider";
+import { cn } from "@/lib/utils/cn";
 import { formatBytes } from "@/lib/utils/formatBytes";
 import type { PublicJobDetail } from "@/types/recruitment";
 
-function FormSection({ title, description, children }: { title: string; description: string; children: ReactNode }) {
+/** Numbered form section: forest number badge + serif heading. */
+function FormSection({
+  step,
+  title,
+  description,
+  children,
+}: {
+  step: number;
+  title: string;
+  description: string;
+  children: ReactNode;
+}) {
+  const headingId = `apply-section-${step}`;
   return (
-    <section className="py-10 first:pt-0 last:pb-0">
-      <h2 className="canopy-type-heading text-canopy-ink">{title}</h2>
-      <p className="canopy-type-meta mt-1 font-normal text-canopy-ink-muted">{description}</p>
-      <div className="mt-6">{children}</div>
+    <section aria-labelledby={headingId} className="mt-9 first:mt-0">
+      <div className="flex items-center gap-2.5">
+        <span
+          aria-hidden
+          className="flex size-6.5 shrink-0 items-center justify-center rounded-full bg-canopy-forest text-xs font-bold text-white"
+        >
+          {step}
+        </span>
+        <h2 id={headingId} className="font-canopy-display text-xl leading-tight font-semibold text-canopy-ink">
+          {title}
+        </h2>
+      </div>
+      <p className="mt-1.5 text-[0.8125rem] text-canopy-ink-muted">{description}</p>
+      <div className="mt-5">{children}</div>
     </section>
   );
 }
 
-/** Upload control styled as the shared secondary button so it matches every other button. */
-const uploadButtonClass = `${canopyButtonVariants({ variant: "secondary" })} h-auto min-h-12 w-fit max-w-full cursor-pointer py-3 text-left whitespace-normal focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-canopy-accent`;
+/** Dashed drop-zone style row around a file input; the "button" is the shared secondary look. */
+const uploadRowClass =
+  "flex cursor-pointer flex-wrap items-center gap-x-3 gap-y-2 rounded-canopy-control border border-dashed border-canopy-border-strong/70 bg-canopy-bg/60 px-4 py-3 transition-colors hover:border-canopy-accent focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-canopy-accent";
+const uploadButtonClass = `${canopyButtonVariants({ variant: "secondary", size: "sm" })} ml-auto pointer-events-none`;
+
+/** "What happens next": taken from what the confirmation page tells applicants. */
+const NEXT_STEPS = [
+  "You get an application reference as soon as you submit.",
+  "Our recruitment team reviews your application.",
+  "We contact you if there are further steps.",
+];
 
 export function JobApplicationFormCanopy({ job }: { job: PublicJobDetail }) {
   const {
@@ -51,24 +84,25 @@ export function JobApplicationFormCanopy({ job }: { job: PublicJobDetail }) {
 
   return (
     <CanopyCareersFrame>
-      <CareersHero>
+      <CareersBand>
         <BackLink href={`/jobs/${job.id}`}>Back to {job.title}</BackLink>
-        <p className="canopy-type-eyebrow mt-8 text-canopy-accent-text">Application</p>
-        <h1 className="canopy-type-title mt-3 max-w-4xl text-canopy-ink">Apply for {job.title}</h1>
-        <p className="canopy-type-lead mt-5 max-w-xl text-canopy-ink-muted">
-          Tell us a bit about yourself — it only takes a few minutes.
+        <h1 className="mt-2 font-canopy-display text-[clamp(1.75rem,1.4rem+1.5vw,2.375rem)] leading-tight font-semibold tracking-[-0.015em] text-balance text-canopy-ink">
+          Apply for {job.title}
+        </h1>
+        <p className="mt-1.5 text-[0.9375rem] leading-relaxed text-canopy-ink-muted">
+          Tell us a bit about yourself — it only takes a few minutes. Fields marked{" "}
+          <span className="text-canopy-accent-text">*</span> are required.
         </p>
-      </CareersHero>
-      <CurveDivider fill="var(--color-canopy-surface)" className="-mt-px h-8 sm:h-12 md:h-16" />
+      </CareersBand>
 
-      <main className={`${careersContainer} pt-10 pb-20 sm:pt-14 sm:pb-28`}>
-        <div className="grid grid-cols-1 gap-12 lg:grid-cols-[minmax(0,1fr)_340px] lg:items-start lg:gap-16">
+      <main className={`${careersContainer} pt-5 pb-16 sm:pt-6 sm:pb-24`}>
+        <div className="grid grid-cols-1 gap-5 tablet:grid-cols-[minmax(0,1fr)_21.25rem] tablet:items-start">
           <form
             onSubmit={onContinue}
-            className="min-w-0 rounded-canopy-card border border-canopy-border bg-canopy-card p-6 shadow-canopy-rest sm:p-10"
+            className={cn(panelClass, "min-w-0 p-5 sm:px-6 sm:py-6")}
           >
-            <div className="flex flex-col divide-y divide-canopy-border">
-              <FormSection title="Your details" description="How we can reach you, and a little about your background.">
+            <div className="flex flex-col">
+              <FormSection step={1} title="Your details" description="How we can reach you, and a little about your background.">
                 <div className="grid grid-cols-1 gap-x-5 gap-y-2 sm:grid-cols-2">
                   <CanopyTextField label="First name" required autoComplete="given-name" error={errors.firstName?.message} {...register("firstName")} />
                   <CanopyTextField label="Last name" required autoComplete="family-name" error={errors.lastName?.message} {...register("lastName")} />
@@ -95,29 +129,30 @@ export function JobApplicationFormCanopy({ job }: { job: PublicJobDetail }) {
                 </div>
               </FormSection>
 
-              <FormSection title="Resume & links" description="PDF or Word for your resume. Everything else is optional.">
+              <FormSection step={2} title="Resume & links" description="PDF or Word for your resume. Everything else is optional.">
                 <div className="flex flex-col gap-2">
                   <div>
                     <p className="text-[0.8125rem] font-medium text-canopy-ink-muted">
                       Resume <span className="text-canopy-accent-text">*</span>
                     </p>
-                    <div className="mt-1.5 flex flex-wrap items-center gap-x-4 gap-y-2">
-                      <label className={uploadButtonClass}>
-                        <Upload className="size-4" aria-hidden />
-                        {resumeFile ? "Replace file" : "Upload resume"}
-                        <input
-                          type="file"
-                          accept=".pdf,.doc,.docx"
-                          className="sr-only"
-                          onChange={(e) => setResumeFile(e.target.files?.[0] ?? null)}
-                        />
-                      </label>
-                      {resumeFile && (
-                        <p className="canopy-type-meta font-normal text-canopy-ink-muted">
-                          {resumeFile.name} · {formatBytes(resumeFile.size)}
-                        </p>
-                      )}
-                    </div>
+                    <label className={cn(uploadRowClass, "mt-1.5", resumeError && "border-canopy-error")}>
+                      <FileText className="size-5 shrink-0 text-canopy-ink-muted" aria-hidden />
+                      <span className="min-w-0 flex-1">
+                        <span className="block truncate text-sm font-semibold text-canopy-ink">
+                          {resumeFile ? resumeFile.name : "Upload your resume"}
+                        </span>
+                        <span className="block text-xs text-canopy-ink-muted">
+                          {resumeFile ? formatBytes(resumeFile.size) : "PDF or Word"}
+                        </span>
+                      </span>
+                      <span className={uploadButtonClass}>{resumeFile ? "Replace file" : "Browse"}</span>
+                      <input
+                        type="file"
+                        accept=".pdf,.doc,.docx"
+                        className="sr-only"
+                        onChange={(e) => setResumeFile(e.target.files?.[0] ?? null)}
+                      />
+                    </label>
                     <p className="mt-1.5 min-h-4.25 text-[0.8125rem] text-canopy-error" role={resumeError ? "alert" : undefined}>
                       {resumeError || " "}
                     </p>
@@ -143,22 +178,21 @@ export function JobApplicationFormCanopy({ job }: { job: PublicJobDetail }) {
                     />
                   </div>
 
-                  <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
-                    <label className={uploadButtonClass}>
-                      <Upload className="size-4" aria-hidden />
-                      {otherFile ? "Replace additional file" : "Attach additional document (optional)"}
-                      <input type="file" className="sr-only" onChange={(e) => setOtherFile(e.target.files?.[0] ?? null)} />
-                    </label>
-                    {otherFile && (
-                      <p className="canopy-type-meta font-normal text-canopy-ink-muted">
-                        {otherFile.name} · {formatBytes(otherFile.size)}
-                      </p>
-                    )}
-                  </div>
+                  <label className={uploadRowClass}>
+                    <Paperclip className="size-5 shrink-0 text-canopy-ink-muted" aria-hidden />
+                    <span className="min-w-0 flex-1">
+                      <span className="block truncate text-sm font-semibold text-canopy-ink">
+                        {otherFile ? otherFile.name : "Attach additional document (optional)"}
+                      </span>
+                      {otherFile && <span className="block text-xs text-canopy-ink-muted">{formatBytes(otherFile.size)}</span>}
+                    </span>
+                    <span className={uploadButtonClass}>{otherFile ? "Replace file" : "Browse"}</span>
+                    <input type="file" className="sr-only" onChange={(e) => setOtherFile(e.target.files?.[0] ?? null)} />
+                  </label>
                 </div>
               </FormSection>
 
-              <div className="flex flex-col gap-4 pt-10">
+              <div className="mt-7 flex flex-col gap-4 border-t border-canopy-border pt-6">
                 {submitError && (
                   <p className="canopy-type-meta rounded-canopy-control bg-canopy-error-tint px-4 py-3 text-canopy-error" role="alert">
                     {submitError}
@@ -171,8 +205,26 @@ export function JobApplicationFormCanopy({ job }: { job: PublicJobDetail }) {
             </div>
           </form>
 
-          <aside className="lg:sticky lg:top-10">
-            <JobSummaryCard eyebrow="Applying for" job={job} salary={salary} />
+          <aside className="flex flex-col gap-3.5 tablet:sticky tablet:top-6">
+            <JobSummaryCard eyebrow={"You’re applying for"} job={job} salary={salary} />
+            <div className={cn(softPanelClass, "px-5 py-5 sm:px-6")}>
+              <h2 className="font-canopy-display text-[1.1875rem] leading-tight font-semibold text-canopy-ink">
+                What happens next
+              </h2>
+              <ol className="mt-3 flex flex-col gap-2.5">
+                {NEXT_STEPS.map((step, i) => (
+                  <li key={step} className="flex items-start gap-2.5 text-sm text-canopy-ink">
+                    <span
+                      aria-hidden
+                      className="mt-px flex size-5 shrink-0 items-center justify-center rounded-full bg-canopy-card canopy-mono text-[0.6875rem] font-semibold text-canopy-ink-muted"
+                    >
+                      {i + 1}
+                    </span>
+                    {step}
+                  </li>
+                ))}
+              </ol>
+            </div>
           </aside>
         </div>
       </main>

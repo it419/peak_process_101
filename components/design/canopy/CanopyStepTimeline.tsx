@@ -8,19 +8,39 @@ import { stepRegistry } from "@/lib/onboarding/steps.config";
 import { useStepStatuses } from "@/lib/store/selectors";
 import type { StepStatus } from "@/types/onboarding";
 
+/** Ledger checklist wording. "blocked" = started but incomplete, after the
+ *  step you're up to — it needs attention before you can submit. */
 const STATUS_LABEL: Record<StepStatus, string> = {
   completed: "Complete",
-  current: "In progress",
-  blocked: "In progress",
+  current: "Up next",
+  blocked: "Incomplete",
   upcoming: "Not started",
 };
 
 const STATUS_TEXT_TONE: Record<StepStatus, string> = {
   completed: "text-canopy-success",
-  current: "text-canopy-accent-text",
-  blocked: "text-canopy-gold",
+  current: "text-canopy-gold",
+  blocked: "rounded-canopy-pill bg-canopy-gold-tint px-2.5 py-0.5 text-canopy-gold",
   upcoming: "text-canopy-ink-faint",
 };
+
+function StepDot({ status, index, size }: { status: StepStatus; index: number; size: "sm" | "md" }) {
+  return (
+    <span
+      aria-hidden
+      className={cn(
+        "flex shrink-0 items-center justify-center rounded-full border font-bold",
+        size === "sm" ? "size-6 text-[10px] sm:size-7 sm:text-[11px]" : "size-6 text-xs",
+        status === "completed" && "border-canopy-accent bg-canopy-accent text-canopy-on-accent",
+        status === "current" && "border-2 border-canopy-accent bg-canopy-card text-canopy-accent-text",
+        status === "blocked" && "border-canopy-gold bg-canopy-card text-canopy-gold",
+        status === "upcoming" && "border-canopy-border-strong/60 bg-canopy-card text-canopy-ink-muted",
+      )}
+    >
+      {status === "completed" ? <Check className="size-3" strokeWidth={3} /> : index + 1}
+    </span>
+  );
+}
 
 interface CanopyStepTimelineProps {
   variant?: "trail" | "list";
@@ -43,25 +63,16 @@ export function CanopyStepTimeline({ variant = "list", className }: CanopyStepTi
               <Link
                 href={href}
                 aria-current={pathname === href ? "step" : undefined}
+                aria-label={`${step.shortLabel}: ${STATUS_LABEL[status]}`}
                 title={step.shortLabel}
-                className={cn(
-                  "flex size-6 shrink-0 items-center justify-center rounded-full border text-[10px] font-semibold transition-colors sm:size-7 sm:text-[11px]",
-                  status === "completed" && "border-canopy-accent bg-canopy-accent text-canopy-on-accent",
-                  status === "current" &&
-                    "border-canopy-accent bg-canopy-bg text-canopy-accent-text ring-2 ring-canopy-accent/25",
-                  status === "blocked" && "border-canopy-gold/70 bg-canopy-bg text-canopy-gold",
-                  status === "upcoming" && "border-canopy-border bg-canopy-bg text-canopy-ink-faint",
-                )}
+                className="rounded-full outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-canopy-accent"
               >
-                {status === "completed" ? <Check className="size-3" strokeWidth={3} /> : index + 1}
+                <StepDot status={status} index={index} size="sm" />
               </Link>
               {!isLast && (
                 <span
                   aria-hidden
-                  className={cn(
-                    "h-px flex-1",
-                    status === "completed" ? "bg-canopy-accent/40" : "bg-canopy-border",
-                  )}
+                  className={cn("h-px flex-1", status === "completed" ? "bg-canopy-accent/40" : "bg-canopy-border")}
                 />
               )}
             </div>
@@ -71,49 +82,39 @@ export function CanopyStepTimeline({ variant = "list", className }: CanopyStepTi
     );
   }
 
+  /* "list": the dashboard's Ledger checklist — hairline rows, status on the
+     right, the step you're up to tinted sage. */
   return (
-    <nav aria-label="Onboarding steps" className={cn("flex flex-col", className)}>
-      {stepRegistry.map((step, index) => {
-        const status = statuses[step.id];
-        const isLast = index === stepRegistry.length - 1;
-        const href = `/onboarding/${step.slug}`;
-        return (
-          <Link
-            key={step.id}
-            href={href}
-            className={cn(
-              "group relative flex items-center gap-4 rounded-2xl px-3 py-3.5 transition-colors hover:bg-canopy-surface",
-              !isLast && "mb-1",
-            )}
-          >
-            <span
-              className={cn(
-                "flex size-8 shrink-0 items-center justify-center rounded-full border text-[13px] font-semibold",
-                status === "completed" && "border-canopy-accent bg-canopy-accent text-canopy-on-accent",
-                status === "current" &&
-                  "border-canopy-accent bg-canopy-card text-canopy-accent-text ring-2 ring-canopy-accent/20",
-                status === "blocked" && "border-canopy-gold/60 bg-canopy-card text-canopy-gold",
-                status === "upcoming" && "border-canopy-border bg-canopy-card text-canopy-ink-faint",
-              )}
-            >
-              {status === "completed" ? <Check className="size-3.5" strokeWidth={3} /> : index + 1}
-            </span>
-            <span className="flex min-w-0 flex-1 items-center justify-between gap-3">
-              <span
+    <nav aria-label="Onboarding steps" className={className}>
+      <ol>
+        {stepRegistry.map((step, index) => {
+          const status = statuses[step.id];
+          return (
+            <li key={step.id} className="border-b border-canopy-border last:border-b-0">
+              <Link
+                href={`/onboarding/${step.slug}`}
                 className={cn(
-                  "font-canopy-display text-base",
-                  status === "current" ? "font-semibold text-canopy-ink" : "text-canopy-ink",
+                  "flex items-center gap-3 px-4 py-2.5 text-sm transition-colors outline-none focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-canopy-accent sm:px-4.5",
+                  status === "current" ? "bg-canopy-surface hover:bg-canopy-surface-2/70" : "hover:bg-canopy-table-head",
                 )}
               >
-                {step.label}
-              </span>
-              <span className={cn("text-[0.8125rem] font-medium", STATUS_TEXT_TONE[status])}>
-                {STATUS_LABEL[status]}
-              </span>
-            </span>
-          </Link>
-        );
-      })}
+                <StepDot status={status} index={index} size="md" />
+                <span
+                  className={cn(
+                    "min-w-0 flex-1 truncate",
+                    status === "current" ? "font-bold text-canopy-ink" : "text-canopy-ink",
+                  )}
+                >
+                  {step.label}
+                </span>
+                <span className={cn("shrink-0 text-xs font-semibold", STATUS_TEXT_TONE[status])}>
+                  {STATUS_LABEL[status]}
+                </span>
+              </Link>
+            </li>
+          );
+        })}
+      </ol>
     </nav>
   );
 }

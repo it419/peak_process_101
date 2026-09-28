@@ -1,24 +1,30 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
+import { ArrowRight } from "lucide-react";
 import { CanopyCareersFrame } from "@/components/design/canopy/recruitment/CanopyCareersFrame";
 import {
   BackLink,
-  CareersHero,
-  JobMetaChips,
-  JobSummaryCard,
+  JobFacts,
+  JobMetaRow,
   NAV_FORWARD,
   careersContainer,
   formatSalary,
+  panelClass,
+  panelHeadingClass,
+  softPanelClass,
+  teamPillClass,
 } from "@/components/design/canopy/recruitment/careersUi";
-import { CurveDivider } from "@/components/design/canopy/CurveDivider";
 import { canopyButtonVariants } from "@/components/design/canopy/ui/CanopyButton";
+import { cn } from "@/lib/utils/cn";
 import type { PublicJobDetail } from "@/types/recruitment";
+
+const proseText = "text-[0.9375rem] leading-relaxed text-canopy-ink/90";
 
 function Section({ title, children }: { title: string; children: ReactNode }) {
   return (
-    <section className="py-10 first:pt-0 last:pb-0">
-      <h2 className="canopy-type-heading text-canopy-ink">{title}</h2>
-      <div className="mt-4">{children}</div>
+    <section className="mt-6 first:mt-0">
+      <h2 className={panelHeadingClass}>{title}</h2>
+      <div className="mt-2">{children}</div>
     </section>
   );
 }
@@ -29,10 +35,10 @@ function BulletList({ text }: { text: string }) {
     .map((l) => l.trim())
     .filter(Boolean);
   return (
-    <ul className="flex flex-col gap-3">
+    <ul className="flex flex-col gap-1.5">
       {items.map((item) => (
-        <li key={item} className="canopy-type-body flex gap-3 text-canopy-ink-muted">
-          <span className="mt-[0.7em] size-1.5 shrink-0 rounded-full bg-canopy-accent" aria-hidden />
+        <li key={item} className={cn(proseText, "flex gap-3")}>
+          <span className="mt-[0.62em] size-1.5 shrink-0 rounded-full bg-canopy-gold" aria-hidden />
           {item}
         </li>
       ))}
@@ -47,15 +53,15 @@ function hasItems(text: string | null): text is string {
 function SkillList({ label, skills, emphasis }: { label: string; skills: string[]; emphasis: boolean }) {
   return (
     <div>
-      <p className="canopy-type-eyebrow text-canopy-ink-faint">{label}</p>
-      <ul className="mt-3 flex flex-wrap gap-2">
+      <p className="canopy-type-eyebrow text-canopy-ink-muted">{label}</p>
+      <ul className="mt-2.5 flex flex-wrap gap-2">
         {skills.map((s) => (
           <li
             key={s}
             className={
               emphasis
-                ? "canopy-type-meta rounded-canopy-pill border border-canopy-border-strong/60 bg-canopy-card px-3 py-1 text-canopy-ink"
-                : "canopy-type-meta rounded-canopy-pill border border-canopy-border px-3 py-1 text-canopy-ink-muted"
+                ? teamPillClass
+                : "inline-flex items-center rounded-canopy-pill border border-canopy-border-strong/60 px-2.5 py-[0.1875rem] text-xs leading-none font-semibold text-canopy-ink"
             }
           >
             {s}
@@ -69,81 +75,102 @@ function SkillList({ label, skills, emphasis }: { label: string; skills: string[
 export function PublicJobDetailCanopy({ job }: { job: PublicJobDetail }) {
   const salary = formatSalary(job.salaryMin, job.salaryMax);
   const hasSkills = job.requiredSkills.length > 0 || job.preferredSkills.length > 0;
+  const hasProse =
+    Boolean(job.overview) ||
+    hasItems(job.responsibilities) ||
+    hasItems(job.requirements) ||
+    hasSkills ||
+    Boolean(job.education) ||
+    hasItems(job.benefits);
 
   return (
     <CanopyCareersFrame>
-      <CareersHero>
-        <BackLink href="/jobs">All positions</BackLink>
-        {job.department && <p className="canopy-type-eyebrow mt-8 text-canopy-accent-text">{job.department}</p>}
-        <h1 className={`canopy-type-title max-w-4xl text-canopy-ink ${job.department ? "mt-3" : "mt-8"}`}>
-          {job.title}
-        </h1>
-        <JobMetaChips job={job} salary={salary} className="mt-7" />
-      </CareersHero>
-      <CurveDivider fill="var(--color-canopy-surface)" className="-mt-px h-8 sm:h-12 md:h-16" />
-
-      <main className={`${careersContainer} pt-10 pb-20 sm:pt-14 sm:pb-28`}>
-        <div className="grid grid-cols-1 gap-12 lg:grid-cols-[minmax(0,1fr)_340px] lg:items-start lg:gap-16">
+      <main className={`${careersContainer} pt-6 pb-16 sm:pt-7 sm:pb-24`}>
+        <div className="grid grid-cols-1 gap-7 tablet:grid-cols-[minmax(0,1fr)_21.25rem] tablet:items-start">
           <div className="min-w-0">
+            <BackLink href="/jobs">All positions</BackLink>
+            {job.department && <p className="canopy-type-eyebrow mt-4 text-canopy-accent-text">{job.department}</p>}
+            <h1
+              className={cn(
+                "font-canopy-display text-[clamp(2rem,1.45rem+2.2vw,2.75rem)] leading-[1.1] font-semibold tracking-[-0.02em] text-balance text-canopy-ink",
+                job.department ? "mt-1.5" : "mt-4",
+              )}
+            >
+              {job.title}
+            </h1>
+            <JobMetaRow job={job} salary={salary} className="mt-3.5" />
+
             <Link
               href={`/jobs/${job.id}/apply`}
               transitionTypes={NAV_FORWARD}
-              className={`${canopyButtonVariants({ variant: "primary" })} mb-10 w-full lg:hidden`}
+              className={`${canopyButtonVariants({ variant: "primary" })} mt-6 w-full tablet:hidden`}
             >
               Apply now
+              <ArrowRight className="size-4" aria-hidden />
             </Link>
 
-            <div className="flex max-w-[68ch] flex-col divide-y divide-canopy-border">
-              {job.overview && (
-                <Section title="Overview">
-                  <p className="canopy-type-body whitespace-pre-line text-canopy-ink-muted">{job.overview}</p>
-                </Section>
-              )}
-              {hasItems(job.responsibilities) && (
-                <Section title="Responsibilities">
-                  <BulletList text={job.responsibilities} />
-                </Section>
-              )}
-              {hasItems(job.requirements) && (
-                <Section title="Requirements">
-                  <BulletList text={job.requirements} />
-                </Section>
-              )}
-              {hasSkills && (
-                <Section title="Skills">
-                  <div className="flex flex-col gap-6">
-                    {job.requiredSkills.length > 0 && (
-                      <SkillList label="Required" skills={job.requiredSkills} emphasis />
-                    )}
-                    {job.preferredSkills.length > 0 && (
-                      <SkillList label="Preferred" skills={job.preferredSkills} emphasis={false} />
-                    )}
-                  </div>
-                </Section>
-              )}
-              {job.education && (
-                <Section title="Education">
-                  <p className="canopy-type-body text-canopy-ink-muted">{job.education}</p>
-                </Section>
-              )}
-              {hasItems(job.benefits) && (
-                <Section title="Benefits">
-                  <BulletList text={job.benefits} />
-                </Section>
-              )}
-            </div>
+            {hasProse && (
+              <div className={cn(panelClass, "mt-6 px-5 py-6 sm:px-6")}>
+                {job.overview && (
+                  <Section title="Overview">
+                    <p className={cn(proseText, "whitespace-pre-line")}>{job.overview}</p>
+                  </Section>
+                )}
+                {hasItems(job.responsibilities) && (
+                  <Section title="Responsibilities">
+                    <BulletList text={job.responsibilities} />
+                  </Section>
+                )}
+                {hasItems(job.requirements) && (
+                  <Section title="Requirements">
+                    <BulletList text={job.requirements} />
+                  </Section>
+                )}
+                {hasSkills && (
+                  <Section title="Skills">
+                    <div className="mt-1 flex flex-col gap-4">
+                      {job.requiredSkills.length > 0 && (
+                        <SkillList label="Required" skills={job.requiredSkills} emphasis />
+                      )}
+                      {job.preferredSkills.length > 0 && (
+                        <SkillList label="Preferred" skills={job.preferredSkills} emphasis={false} />
+                      )}
+                    </div>
+                  </Section>
+                )}
+                {job.education && (
+                  <Section title="Education">
+                    <p className={proseText}>{job.education}</p>
+                  </Section>
+                )}
+                {hasItems(job.benefits) && (
+                  <Section title="Benefits">
+                    <BulletList text={job.benefits} />
+                  </Section>
+                )}
+              </div>
+            )}
           </div>
 
-          <aside className="lg:sticky lg:top-10">
-            <JobSummaryCard eyebrow={"You’re applying for"} job={job} salary={salary}>
+          <aside className="flex flex-col gap-3.5 tablet:sticky tablet:top-6" aria-label="Apply for this role">
+            <div className={cn(softPanelClass, "px-5 py-5 sm:px-6")}>
+              <h2 className="font-canopy-display text-[1.375rem] leading-tight font-semibold text-canopy-ink">
+                Interested?
+              </h2>
+              <p className="mt-1 text-[0.8125rem] text-canopy-ink-muted">Applying only takes a few minutes.</p>
               <Link
                 href={`/jobs/${job.id}/apply`}
-              transitionTypes={NAV_FORWARD}
-                className={`${canopyButtonVariants({ variant: "primary" })} mt-7 w-full`}
+                transitionTypes={NAV_FORWARD}
+                className={`${canopyButtonVariants({ variant: "primary" })} mt-3.5 w-full`}
               >
                 Apply now
+                <ArrowRight className="size-4" aria-hidden />
               </Link>
-            </JobSummaryCard>
+            </div>
+            <div className={cn(panelClass, "px-5 py-5 sm:px-6")}>
+              <h2 className="sr-only">Role details</h2>
+              <JobFacts job={job} salary={salary} />
+            </div>
           </aside>
         </div>
       </main>

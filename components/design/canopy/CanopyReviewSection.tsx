@@ -1,6 +1,6 @@
 import Link from "next/link";
-import { cn } from "@/lib/utils/cn";
 import type { StepStatus } from "@/types/onboarding";
+import { CanopyPill } from "./CanopyStepShell";
 
 interface CanopyReviewSectionProps {
   title: string;
@@ -16,28 +16,32 @@ const STATUS_LABEL: Record<StepStatus, string> = {
   upcoming: "Not started",
 };
 
-const STATUS_TONE: Record<StepStatus, string> = {
-  completed: "text-canopy-success",
-  current: "text-canopy-ink-faint",
-  blocked: "text-canopy-error",
-  upcoming: "text-canopy-ink-faint",
+const STATUS_TONE: Record<StepStatus, "success" | "attention" | "neutral"> = {
+  completed: "success",
+  current: "neutral",
+  blocked: "attention",
+  upcoming: "neutral",
 };
 
+/** One hairline row of the review table: section + summary on the left,
+ *  status pill and Edit link on the right. Wraps below `sm`. */
 export function CanopyReviewSection({ title, status, href, summary }: CanopyReviewSectionProps) {
   return (
-    <div className="flex items-center justify-between gap-4 border-b border-canopy-border py-5 last:border-b-0">
-      <div className="min-w-0">
-        <p className="font-canopy-display text-base font-semibold text-canopy-ink">
-          {title}
-          <span className={cn("ml-2.5 font-canopy-sans text-[0.8125rem] font-medium", STATUS_TONE[status])}>
-            {STATUS_LABEL[status]}
-          </span>
-        </p>
-        {summary && <p className="mt-1 truncate text-sm text-canopy-ink-muted">{summary}</p>}
+    <div className="flex flex-wrap items-center gap-x-4 gap-y-2 border-b border-canopy-border py-3.5 first:pt-0.5 last:border-b-0 last:pb-0.5">
+      <div className="min-w-0 flex-1 basis-48">
+        <p className="text-sm font-bold text-canopy-ink">{title}</p>
+        <p className="mt-0.5 truncate text-[0.8125rem] text-canopy-ink-muted">{summary || "—"}</p>
       </div>
-      <Link href={href} className="shrink-0 text-sm font-medium text-canopy-accent-text hover:underline">
-        Edit
-      </Link>
+      <div className="flex shrink-0 items-center gap-4">
+        <CanopyPill tone={STATUS_TONE[status]}>{STATUS_LABEL[status]}</CanopyPill>
+        <Link
+          href={href}
+          aria-label={`Edit ${title}`}
+          className="rounded-sm text-[0.8125rem] font-bold text-canopy-accent-text underline-offset-4 outline-none hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-canopy-accent"
+        >
+          Edit
+        </Link>
+      </div>
     </div>
   );
 }

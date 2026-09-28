@@ -6,7 +6,15 @@ import { cn } from "@/lib/utils/cn";
 import { formatRelativeTime } from "@/lib/utils/formatRelativeTime";
 import { useSaveMeta } from "@/lib/store/selectors";
 
-export function CanopySaveIndicator({ className }: { className?: string }) {
+/** Mono status line for the top-right of step pages. `idleLabel` shows
+ *  before anything has been saved this session. */
+export function CanopySaveIndicator({
+  className,
+  idleLabel = "Not yet saved",
+}: {
+  className?: string;
+  idleLabel?: string;
+}) {
   const { saveStatus, saveError, lastSavedAt } = useSaveMeta();
   const [, forceTick] = useState(0);
 
@@ -41,8 +49,9 @@ export function CanopySaveIndicator({ className }: { className?: string }) {
       </span>
     );
   } else {
-    content = <span className="text-canopy-ink-faint">Not yet saved</span>;
+    // Plain sans for the idle hint; mono is reserved for the live status.
+    content = <span className="font-canopy-sans text-[0.8125rem] text-canopy-ink-muted">{idleLabel}</span>;
   }
 
-  return <div className={cn("text-[0.8125rem]", className)}>{content}</div>;
+  return <div className={cn("font-canopy-mono text-xs", className)}>{content}</div>;
 }

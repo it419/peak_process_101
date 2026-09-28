@@ -16,7 +16,7 @@ export function DocumentsStepCanopy() {
       description="You can replace any file up until you submit."
       onContinue={onContinue}
       continueDisabled={remaining > 0}
-      continueLabel={remaining > 0 ? `${remaining} required item${remaining > 1 ? "s" : ""} left` : "Save & Continue"}
+      continueLabel={remaining > 0 ? `${remaining} required item${remaining > 1 ? "s" : ""} left` : "Save & continue"}
     >
       <div>
         {DOCUMENT_REQUIREMENTS.map((requirement) => (
