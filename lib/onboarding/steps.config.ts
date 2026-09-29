@@ -15,12 +15,19 @@ import { HealthInsuranceStepDark } from "@/components/design/dark/steps/HealthIn
 import { DocumentsStepDark } from "@/components/design/dark/steps/DocumentsStepDark";
 import { ReviewStepDark } from "@/components/design/dark/steps/ReviewStepDark";
 import { WelcomeStepOrganic } from "@/components/design/organic/steps/WelcomeStepOrganic";
+import { WelcomeStepCanopy } from "@/components/design/canopy/steps/WelcomeStepCanopy";
 import { PersonalInfoStepOrganic } from "@/components/design/organic/steps/PersonalInfoStepOrganic";
+import { PersonalInfoStepCanopy } from "@/components/design/canopy/steps/PersonalInfoStepCanopy";
 import { ReferencesStepOrganic } from "@/components/design/organic/steps/ReferencesStepOrganic";
+import { ReferencesStepCanopy } from "@/components/design/canopy/steps/ReferencesStepCanopy";
 import { EmergencyContactStepOrganic } from "@/components/design/organic/steps/EmergencyContactStepOrganic";
+import { EmergencyContactStepCanopy } from "@/components/design/canopy/steps/EmergencyContactStepCanopy";
 import { HealthInsuranceStepOrganic } from "@/components/design/organic/steps/HealthInsuranceStepOrganic";
+import { HealthInsuranceStepCanopy } from "@/components/design/canopy/steps/HealthInsuranceStepCanopy";
 import { DocumentsStepOrganic } from "@/components/design/organic/steps/DocumentsStepOrganic";
+import { DocumentsStepCanopy } from "@/components/design/canopy/steps/DocumentsStepCanopy";
 import { ReviewStepOrganic } from "@/components/design/organic/steps/ReviewStepOrganic";
+import { ReviewStepCanopy } from "@/components/design/canopy/steps/ReviewStepCanopy";
 
 export interface StepConfig {
   id: StepId;
@@ -31,6 +38,7 @@ export interface StepConfig {
   Component: ComponentType;
   DarkComponent: ComponentType;
   OrganicComponent: ComponentType;
+  CanopyComponent: ComponentType;
 }
 
 export const stepRegistry: StepConfig[] = [
@@ -43,6 +51,7 @@ export const stepRegistry: StepConfig[] = [
     Component: WelcomeStep,
     DarkComponent: WelcomeStepDark,
     OrganicComponent: WelcomeStepOrganic,
+    CanopyComponent: WelcomeStepCanopy,
   },
   {
     id: "personalInfo",
@@ -53,6 +62,7 @@ export const stepRegistry: StepConfig[] = [
     Component: PersonalInfoStep,
     DarkComponent: PersonalInfoStepDark,
     OrganicComponent: PersonalInfoStepOrganic,
+    CanopyComponent: PersonalInfoStepCanopy,
   },
   {
     id: "references",
@@ -63,6 +73,7 @@ export const stepRegistry: StepConfig[] = [
     Component: ReferencesStep,
     DarkComponent: ReferencesStepDark,
     OrganicComponent: ReferencesStepOrganic,
+    CanopyComponent: ReferencesStepCanopy,
   },
   {
     id: "emergencyContact",
@@ -73,6 +84,7 @@ export const stepRegistry: StepConfig[] = [
     Component: EmergencyContactStep,
     DarkComponent: EmergencyContactStepDark,
     OrganicComponent: EmergencyContactStepOrganic,
+    CanopyComponent: EmergencyContactStepCanopy,
   },
   {
     id: "healthInsurance",
@@ -83,6 +95,7 @@ export const stepRegistry: StepConfig[] = [
     Component: HealthInsuranceStep,
     DarkComponent: HealthInsuranceStepDark,
     OrganicComponent: HealthInsuranceStepOrganic,
+    CanopyComponent: HealthInsuranceStepCanopy,
   },
   {
     id: "documents",
@@ -93,6 +106,7 @@ export const stepRegistry: StepConfig[] = [
     Component: DocumentsStep,
     DarkComponent: DocumentsStepDark,
     OrganicComponent: DocumentsStepOrganic,
+    CanopyComponent: DocumentsStepCanopy,
   },
   {
     id: "review",
@@ -103,6 +117,7 @@ export const stepRegistry: StepConfig[] = [
     Component: ReviewStep,
     DarkComponent: ReviewStepDark,
     OrganicComponent: ReviewStepOrganic,
+    CanopyComponent: ReviewStepCanopy,
   },
 ];
 

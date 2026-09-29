@@ -4,6 +4,7 @@ import { useDesignStore } from "@/lib/design/designStore";
 import { AdminJobFormCurrent } from "@/components/recruitment/AdminJobFormCurrent";
 import { AdminJobFormDark } from "@/components/design/dark/recruitment/AdminJobFormDark";
 import { AdminJobFormOrganic } from "@/components/design/organic/recruitment/AdminJobFormOrganic";
+import { AdminJobFormCanopy } from "@/components/design/canopy/recruitment/AdminJobFormCanopy";
 import type { JobDetail } from "@/types/recruitment";
 
 interface AdminJobFormSwitcherProps {
@@ -17,5 +18,6 @@ export function AdminJobFormSwitcher(props: AdminJobFormSwitcherProps) {
 
   if (designMode === "dark") return <AdminJobFormDark {...props} />;
   if (designMode === "organic") return <AdminJobFormOrganic {...props} />;
+  if (designMode === "canopy") return <AdminJobFormCanopy {...props} />;
   return <AdminJobFormCurrent {...props} />;
 }

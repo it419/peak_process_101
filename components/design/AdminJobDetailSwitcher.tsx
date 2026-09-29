@@ -4,6 +4,7 @@ import { useDesignStore } from "@/lib/design/designStore";
 import { AdminJobDetailCurrent } from "@/components/recruitment/AdminJobDetailCurrent";
 import { AdminJobDetailDark } from "@/components/design/dark/recruitment/AdminJobDetailDark";
 import { AdminJobDetailOrganic } from "@/components/design/organic/recruitment/AdminJobDetailOrganic";
+import { AdminJobDetailCanopy } from "@/components/design/canopy/recruitment/AdminJobDetailCanopy";
 import type { JobDetail } from "@/types/recruitment";
 
 export function AdminJobDetailSwitcher({ job }: { job: JobDetail }) {
@@ -11,5 +12,6 @@ export function AdminJobDetailSwitcher({ job }: { job: JobDetail }) {
 
   if (mode === "dark") return <AdminJobDetailDark job={job} />;
   if (mode === "organic") return <AdminJobDetailOrganic job={job} />;
+  if (mode === "canopy") return <AdminJobDetailCanopy job={job} />;
   return <AdminJobDetailCurrent job={job} />;
 }
