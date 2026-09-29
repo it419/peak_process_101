@@ -1,9 +1,6 @@
 "use client";
 
-import { CanopyTextField } from "@/components/design/canopy/ui/CanopyTextField";
-import { CanopyButton } from "@/components/design/canopy/ui/CanopyButton";
-import { CanopyPasswordField } from "@/components/design/canopy/ui/CanopyPasswordField";
-import { useAdminLoginLogic } from "@/hooks/recruitment/useAdminLoginLogic";
+import { AdminClerkSignIn } from "@/components/recruitment/AdminClerkSignIn";
 
 /** The Peak mark on forest, matching the app sidebar. */
 function ForestMark() {
@@ -16,8 +13,6 @@ function ForestMark() {
 }
 
 export function AdminLoginCanopy() {
-  const { register, errors, isSubmitting, formError, onContinue } = useAdminLoginLogic();
-
   return (
     <div className="min-h-screen bg-canopy-bg font-canopy-ui text-canopy-ink">
       <div className="mx-auto flex min-h-screen w-full max-w-[26rem] flex-col items-stretch justify-center px-4 py-10">
@@ -35,31 +30,13 @@ export function AdminLoginCanopy() {
           </h1>
           <p className="mt-1.5 text-sm text-canopy-ink-muted">Sign in to manage job openings and applications.</p>
 
-          <form onSubmit={onContinue} className="mt-6 flex flex-col gap-2">
-            <CanopyTextField
-              label="Email"
-              type="email"
-              autoComplete="email"
-              required
-              error={errors.email?.message}
-              {...register("email")}
+          <div className="mt-6">
+            <AdminClerkSignIn
+              colors={{ primary: "#1f6f54", text: "#16271f", muted: "#56675f", input: "#ffffff", border: "#86938c", danger: "#b3413a" }}
+              fontFamily="var(--font-manrope), sans-serif"
+              borderRadius="0.625rem"
             />
-            <CanopyPasswordField
-              label="Password"
-              autoComplete="current-password"
-              required
-              error={errors.password?.message}
-              {...register("password")}
-            />
-            {formError && (
-              <p className="rounded-canopy-control bg-canopy-error-tint px-3 py-2 text-sm text-canopy-error" role="alert">
-                {formError}
-              </p>
-            )}
-            <CanopyButton type="submit" isLoading={isSubmitting} className="mt-2 w-full justify-center">
-              Sign in
-            </CanopyButton>
-          </form>
+          </div>
         </div>
       </div>
     </div>

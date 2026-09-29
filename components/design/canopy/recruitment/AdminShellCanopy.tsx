@@ -1,8 +1,9 @@
 "use client";
 
+import { useAdminSignOut } from "@/hooks/recruitment/useAdminSignOut";
 import { Fragment, type ReactNode } from "react";
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { LogOut } from "lucide-react";
 import { cn } from "@/lib/utils/cn";
 
@@ -125,15 +126,10 @@ function crumbsFor(pathname: string): Crumb[] {
 }
 
 export function AdminShellCanopy({ adminName, children }: { adminName: string; children: ReactNode }) {
-  const router = useRouter();
   const pathname = usePathname();
   const crumbs = crumbsFor(pathname ?? "");
 
-  async function handleLogout() {
-    await fetch("/api/admin/logout", { method: "POST" });
-    router.push("/admin/login");
-    router.refresh();
-  }
+  const handleLogout = useAdminSignOut();
 
   return (
     <div className="min-h-screen bg-canopy-bg font-canopy-ui text-canopy-ink">

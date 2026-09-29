@@ -1,20 +1,16 @@
 "use client";
 
+import { useAdminSignOut } from "@/hooks/recruitment/useAdminSignOut";
 import type { ReactNode } from "react";
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { DarkWordmark } from "@/components/design/dark/DarkWordmark";
 import { cn } from "@/lib/utils/cn";
 
 export function AdminShellDark({ adminName, children }: { adminName: string; children: ReactNode }) {
-  const router = useRouter();
   const pathname = usePathname();
 
-  async function handleLogout() {
-    await fetch("/api/admin/logout", { method: "POST" });
-    router.push("/admin/login");
-    router.refresh();
-  }
+  const handleLogout = useAdminSignOut();
 
   return (
     <div className="min-h-screen bg-dark-bg font-sans">

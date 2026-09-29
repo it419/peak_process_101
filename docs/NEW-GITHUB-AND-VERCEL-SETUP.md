@@ -1,13 +1,14 @@
-# Setting up a new GitHub repo and Vercel project
+# Setting up GitHub, Vercel, Neon and Clerk
 
-Step-by-step guide for moving this project (Peak Process Partners onboarding and careers app) to a **new GitHub account/repo** and a **new Vercel project**.
+Step-by-step guide for moving this project (Peak Process Partners onboarding and careers app) to a **new GitHub repo**, a **new Vercel project**, a **Neon** PostgreSQL database and **Clerk** for HR admin sign-in.
 
 **What the app needs in production:**
 
 | Piece | What it is | Where it lives |
 |---|---|---|
 | Code | Next.js 16 app | GitHub → Vercel |
-| Database | **MySQL** (Prisma) | A hosted MySQL provider. Vercel does not host MySQL. |
+| Database | **PostgreSQL** (Prisma) | Neon |
+| HR admin sign-in | Clerk | Clerk (who is an admin: `ADMIN_EMAILS`) |
 | File storage | Resumes and onboarding documents | An **S3-compatible bucket** (MinIO, Cloudflare R2, etc.). Vercel can't store uploaded files on disk. |
 | Secrets | `ENCRYPTION_KEY` etc. | Vercel → Settings → Environment Variables |
 
@@ -19,7 +20,7 @@ Commands below are for **Git Bash on Windows**, run from the project folder (e.g
 
 - Install **Git**, and **Node.js 20 or newer** (the project is tested on 22). Check with `node -v` and `git --version`.
 - Have your working local copy on the branch you want to go live, and make sure it runs (`npm run dev`).
-- Decide which code goes live. The finished Canopy design is on `claude/canopy-design`, and `master` is the older design. The simplest route is to publish `claude/canopy-design` as the new repo's `main` branch (step 2).
+- Use the code with Neon + Clerk: the `claude/neon-clerk` branch (or `master`, once that branch is merged). Step 2 publishes it as the new repo's `main` branch.
 
 ---
 
@@ -37,15 +38,15 @@ Commands below are for **Git Bash on Windows**, run from the project folder (e.g
 ```bash
 cd /e/peak_process_101
 git status                      # must say "working tree clean"
-git checkout claude/canopy-design
+git checkout claude/neon-clerk
 git pull                        # get the latest
 
 # keep the old GitHub as "old-origin", add the new one as "origin"
 git remote rename origin old-origin
 git remote add origin https://github.com/NEW-ACCOUNT/peak_process_101.git
 
-# publish the Canopy branch as the new repo's main branch
-git push -u origin claude/canopy-design:main
+# publish it as the new repo's main branch
+git push -u origin claude/neon-clerk:main
 ```
 
 - Git will ask you to sign in to the **new** GitHub account. Use the browser pop-up, or a Personal Access Token as the password.
@@ -60,48 +61,37 @@ git checkout -b main origin/main
 
 ---
 
-## 3. Create the production MySQL database
+## 3. Create the Neon database
 
-Vercel doesn't provide MySQL, so use a hosted MySQL provider, for example Aiven for MySQL, TiDB Cloud (MySQL-compatible), Railway or DigitalOcean Managed MySQL.
+1. Sign in at neon.tech with the company account → **New project** (region close to your users, e.g. Singapore / Mumbai if offered).
+2. Database name: `peak_process`.
+3. On the project dashboard click **Connect** and copy **two** connection strings:
+   - **Pooled** (host contains `-pooler`) → this is `DATABASE_URL`
+   - **Direct** (toggle "Connection pooling" off) → this is `DIRECT_URL`
 
-1. Create a MySQL database (e.g. `peak_process`).
-2. Copy its **connection string** in this form:
-   ```
-   mysql://USER:PASSWORD@HOST:PORT/DATABASE?sslaccept=strict
-   ```
-   Use the SSL options your provider documents (most require SSL). If the password contains special characters (`@ : / # ?`), URL-encode them.
-3. In the provider's network/firewall settings, **allow connections from anywhere (`0.0.0.0/0`)**. Vercel's servers don't have fixed IP addresses, so otherwise the app can't connect.
+   Both look like `postgresql://USER:PASSWORD@HOST/peak_process?sslmode=require`.
+
+Neon accepts connections from anywhere by default, so Vercel can reach it.
 
 ---
 
-## 4. Create the tables and the admin account
+## 4. Create the tables
 
-Run this once from your PC against the **new production database**, putting the values inline so your local `.env` stays pointed at XAMPP.
+Run once from your PC against Neon (values inline, so your local `.env` is untouched):
 
 ```bash
-# 4a. Create all tables (applies prisma/migrations)
-DATABASE_URL="mysql://USER:PASSWORD@HOST:PORT/DATABASE?sslaccept=strict" \
-  npx prisma migrate deploy
+DATABASE_URL="POOLED-URL" DIRECT_URL="DIRECT-URL" npx prisma migrate deploy
 ```
 
-**4b. Generate a new encryption key** (used to encrypt Aadhaar, PAN and UAN):
+**Encryption key** (encrypts Aadhaar / PAN / UAN) — generate a new one:
 
 ```bash
 node.exe -e "console.log(require('crypto').randomBytes(32).toString('base64'))"
 ```
 
-Save the output somewhere safe, such as a password manager. **If you lose this key, the encrypted data can't be read again.** If you are moving existing data (step 9), don't generate a new key: reuse the old environment's key.
+Store it in a password manager. **If you lose this key, encrypted data can't be read again.** (Moving existing data? Reuse the old key instead — step 9.)
 
-```bash
-# 4c. Create the HR admin login (and the demo data — see note)
-DATABASE_URL="mysql://USER:PASSWORD@HOST:PORT/DATABASE?sslaccept=strict" \
-ENCRYPTION_KEY="THE-KEY-FROM-4b" \
-ADMIN_SEED_EMAIL="hr@yourcompany.com" \
-ADMIN_SEED_PASSWORD="a-long-strong-password" \
-  npx prisma db seed
-```
-
-The seed also adds **three demo employees** (Priya Sharma, Rahul, Ananya) for testing. For a real production database, remove them afterwards in your provider's SQL console:
+Optional: `npx prisma db seed` (same inline `DATABASE_URL`, `DIRECT_URL`, `ENCRYPTION_KEY`) adds **three demo employees** for testing. Don't run it on the real production database, or remove them afterwards:
 
 ```sql
 DELETE FROM employees WHERE id IN (
@@ -110,7 +100,17 @@ DELETE FROM employees WHERE id IN (
   '33333333-3333-3333-3333-333333333333');
 ```
 
-Re-running the seed later with a new `ADMIN_SEED_PASSWORD` resets the admin password.
+---
+
+## 4b. Set up Clerk (HR admin sign-in)
+
+1. Sign in at clerk.com with the company account → **Create application** (name: Peak Process Partners HR). Choose **Email** (and optionally Google) as sign-in options.
+2. **Configure → Restrictions → Sign-up mode: Restricted**, so nobody can create an account on their own.
+3. **Users → Invite** each HR person by email. They get an email to set their password.
+4. **API keys** page: copy `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` and `CLERK_SECRET_KEY`.
+5. Decide the admin list: every HR email that should see the admin, comma-separated — this is `ADMIN_EMAILS`. Someone who signs in but isn't on the list sees a "No HR access" page.
+
+Clerk gives you a **Development** instance first. Use it for previews; before launch, create the **Production** instance in Clerk (it asks you to add a domain and a few DNS records), and use its keys for Vercel Production.
 
 ---
 
@@ -137,18 +137,20 @@ Resumes and documents go to an S3-compatible bucket, such as your existing MinIO
 
 | Name | Value | Required |
 |---|---|---|
-| `DATABASE_URL` | connection string from step 3 | yes |
-| `ENCRYPTION_KEY` | key from step 4b | yes |
+| `DATABASE_URL` | Neon **pooled** string (step 3) | yes |
+| `DIRECT_URL` | Neon **direct** string (step 3) | yes |
+| `ENCRYPTION_KEY` | key from step 4 | yes |
+| `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` | Clerk (step 4b) | yes |
+| `CLERK_SECRET_KEY` | Clerk (step 4b) | yes |
+| `ADMIN_EMAILS` | e.g. `hr@company.com,lead@company.com` | yes |
 | `MINIO_ENDPOINT` | host only, no `https://` | yes |
 | `MINIO_ACCESS_KEY` | from step 5 | yes |
 | `MINIO_SECRET_KEY` | from step 5 | yes |
 | `MINIO_BUCKET` | from step 5 | yes |
 | `SESSION_COOKIE_NAME` | `ppp_session` | optional (default) |
-| `ADMIN_SESSION_COOKIE_NAME` | `ppp_admin_session` | optional (default) |
 
 - Set them for **Production**. Also tick **Preview** if you want preview deployments (other branches) to work. Without these variables, preview sites show errors.
 - **Don't** set `NEXT_PUBLIC_PERSISTENCE_MODE` (that's only for offline demos).
-- `ADMIN_SEED_EMAIL` / `ADMIN_SEED_PASSWORD` aren't needed on Vercel. The seed runs from your PC (step 4).
 
 5. Click **Deploy** and wait for "Ready".
 6. **Settings → Git → Production Branch** must be `main`. Only that branch updates the live site; other branches get preview URLs.
@@ -160,7 +162,8 @@ Resumes and documents go to an S3-compatible bucket, such as your existing MinIO
 Open the Vercel URL and test each area:
 
 - [ ] `/jobs`: careers page loads, with the Canopy design.
-- [ ] `/admin/login`: sign in with the step 4c email and password (the eye button shows the password).
+- [ ] `/admin/login`: sign in with an invited Clerk account whose email is in `ADMIN_EMAILS`.
+- [ ] Sign in with an account **not** in `ADMIN_EMAILS` → you should see "No HR access".
 - [ ] `/admin/jobs/new`: create a job, set it to **Published**, and save.
 - [ ] `/jobs`: the new job appears. Open it and **apply with a resume** (this tests the database and file storage).
 - [ ] `/admin/jobs` → Applications: the application is listed and the resume **downloads**.
@@ -179,12 +182,7 @@ Vercel → Project → **Settings → Domains** → add e.g. `careers.yourcompan
 
 Only needed if the old environment has real data worth keeping.
 
-1. **Database:** export from the old MySQL and import into the new one:
-   ```bash
-   mysqldump -h OLD_HOST -u USER -p OLD_DB > backup.sql
-   mysql -h NEW_HOST -u USER -p NEW_DB < backup.sql
-   ```
-   Do this *instead of* steps 4a/4c.
+1. **Database:** the old database is MySQL and Neon is PostgreSQL, so a plain dump/restore won't work. Run step 4 (create tables), then copy the rows table by table — e.g. with `pgloader` (it converts MySQL → PostgreSQL), or ask for a one-off copy script. Admin accounts don't need copying: HR people sign in with Clerk and their profile is created on first sign-in.
 2. **`ENCRYPTION_KEY`:** use the **same key** as the old environment, or the encrypted Aadhaar/PAN/UAN values can't be read.
 3. **Files:** copy all objects from the old bucket to the new one (e.g. `mc mirror` for MinIO, or `rclone copy`). Keep the same object keys, because the database stores them.
 
@@ -201,7 +199,34 @@ git push -u origin my-change     # Vercel builds a preview URL
 
 Open a Pull Request on GitHub → check the preview → **merge into `main`**, and Vercel updates the live site automatically.
 
-Local development keeps using your own `.env` (XAMPP MySQL). Never point local development at the production database.
+Local development: see "Running it on your PC" below. Never point local development at the production database.
+
+---
+
+## Running it on your PC (PostgreSQL + Clerk)
+
+XAMPP's MySQL no longer works — the app now needs PostgreSQL. Two options:
+
+- **Easiest:** a free personal Neon project just for development (neon.tech → New project → copy the pooled and direct strings).
+- **Offline:** install PostgreSQL for Windows (postgresql.org/download/windows), create a database `peak_process`, and use `postgresql://postgres:YOUR-PASSWORD@localhost:5432/peak_process` for both URLs.
+
+Then in `.env` (copy `.env.example`):
+
+```
+DATABASE_URL="..."
+DIRECT_URL="..."
+ENCRYPTION_KEY="..."
+ADMIN_EMAILS="you@example.com"
+# leave the two CLERK_ keys commented out locally
+```
+
+```bash
+npx prisma migrate deploy      # create tables
+npx prisma db seed             # optional demo employees
+npm run dev
+```
+
+Open `http://localhost:3000/admin/login`. With no Clerk keys set, Clerk runs in **keyless development mode**: sign up with the email you put in `ADMIN_EMAILS`, verify it with the code Clerk emails you, and you're in. (A small Clerk banner offers to "claim" the app — that's how the dev keys later move into the company Clerk account.)
 
 ---
 
@@ -210,11 +235,13 @@ Local development keeps using your own `.env` (XAMPP MySQL). Never point local d
 | Symptom | Likely cause and fix |
 |---|---|
 | Build fails: `@prisma/client did not initialize yet` | `prisma generate` didn't run. Keep the default build command (`npm run build`, which runs `prebuild`). |
-| `P1001: Can't reach database server` | The database firewall is blocking Vercel. Allow `0.0.0.0/0` (step 3), and check the host/port and SSL options in `DATABASE_URL`. |
+| `P1001: Can't reach database server` | Wrong host, or `?sslmode=require` missing from the Neon URL. Neon projects also "sleep" when idle; the first request may take a few seconds. |
+| `prisma migrate` hangs or errors on Neon | Use the **direct** string as `DIRECT_URL` (the pooled one can't run migrations). |
+| `Clerk keys are missing from your environment` | Set `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` and `CLERK_SECRET_KEY` in Vercel (both Production and Preview), then redeploy. |
+| Signed in but "No HR access" | That email isn't in `ADMIN_EMAILS` (or isn't verified in Clerk). Add it in Vercel → redeploy. |
 | `P1000: Authentication failed` | Wrong user/password, or special characters in the password that aren't URL-encoded. |
-| Error pages mentioning `ENCRYPTION_KEY` | The variable is missing or isn't a 32-byte base64 key (step 4b). |
+| Error pages mentioning `ENCRYPTION_KEY` | The variable is missing or isn't a 32-byte base64 key (step 4). |
 | Upload or download fails | One of the `MINIO_*` variables is missing or wrong. The endpoint must have **no** `https://`; check the bucket name and key permissions. |
 | `/jobs` shows 404 or the old design | The wrong branch is deployed. Check Settings → Git → Production Branch = `main`, then redeploy. |
 | Preview deployment errors, production fine | The environment variables are only set for Production. Also tick **Preview** (step 6). |
-| Admin login says invalid credentials | Re-run step 4c with the email/password you want. |
 | Changed an environment variable but nothing changed | Redeploy: Deployments → ⋯ → **Redeploy**. Variables only apply to new deployments. |

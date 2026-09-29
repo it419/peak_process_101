@@ -1,14 +1,10 @@
 "use client";
 
+import { AdminClerkSignIn } from "@/components/recruitment/AdminClerkSignIn";
 import { OrganicWordmark } from "@/components/design/organic/OrganicWordmark";
-import { OrganicTextField } from "@/components/design/organic/ui/OrganicTextField";
-import { OrganicButton } from "@/components/design/organic/ui/OrganicButton";
 import { CurveDivider } from "@/components/design/organic/CurveDivider";
-import { useAdminLoginLogic } from "@/hooks/recruitment/useAdminLoginLogic";
 
 export function AdminLoginOrganic() {
-  const { register, errors, isSubmitting, formError, onContinue } = useAdminLoginLogic();
-
   return (
     <div className="min-h-screen bg-organic-bg font-organic-sans">
       <div className="mx-auto flex min-h-screen max-w-sm flex-col items-center justify-center px-5 py-10">
@@ -21,28 +17,13 @@ export function AdminLoginOrganic() {
         </div>
         <CurveDivider fill="var(--color-organic-surface)" className="-mt-px h-8 w-full" />
 
-        <form onSubmit={onContinue} className="mt-2 flex w-full flex-col gap-4">
-          <OrganicTextField
-            label="Email"
-            type="email"
-            autoComplete="email"
-            required
-            error={errors.email?.message}
-            {...register("email")}
-          />
-          <OrganicTextField
-            label="Password"
-            type="password"
-            autoComplete="current-password"
-            required
-            error={errors.password?.message}
-            {...register("password")}
-          />
-          {formError && <p className="text-sm text-organic-error">{formError}</p>}
-          <OrganicButton type="submit" isLoading={isSubmitting} className="mt-2 w-full justify-center">
-            Sign in
-          </OrganicButton>
-        </form>
+        <div className="mt-6">
+            <AdminClerkSignIn
+              colors={{ primary: "#a95636", text: "#2a2621", muted: "#5f574b", input: "#fdfbf7", border: "#8f846f", danger: "#a1402f" }}
+              fontFamily="var(--font-geist), sans-serif"
+              borderRadius="0.75rem"
+            />
+          </div>
       </div>
     </div>
   );

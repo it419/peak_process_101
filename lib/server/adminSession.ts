@@ -1,81 +1,80 @@
 import "server-only";
-import { cookies } from "next/headers";
+import { cache } from "react";
 import { NextResponse } from "next/server";
+import { auth, currentUser } from "@clerk/nextjs/server";
 import type { AdminUser } from "@prisma/client";
 import { prisma } from "@/lib/db/prisma";
-import { verifyPassword } from "@/lib/security/password";
 
-const COOKIE_NAME = process.env.ADMIN_SESSION_COOKIE_NAME || "ppp_admin_session";
-const SESSION_DURATION_MS = 12 * 60 * 60 * 1000; // 12 hours
+/**
+ * HR/Admin access. Clerk signs people in; this app decides who is an admin:
+ * a signed-in Clerk user whose *verified* email is listed in ADMIN_EMAILS
+ * (comma-separated). On first visit they get an AdminUser row, linked by
+ * clerkUserId, so jobs and status changes can record who made them.
+ * Removing an email from ADMIN_EMAILS revokes access on the next request.
+ */
 
-export class UnauthorizedError extends Error {
-  constructor() {
-    super("Not authenticated");
-    this.name = "UnauthorizedError";
-  }
+export type AdminAccess =
+  | { status: "signed-out" }
+  | { status: "forbidden"; email: string | null }
+  | { status: "ok"; admin: AdminUser };
+
+function allowedEmails(): Set<string> {
+  return new Set(
+    (process.env.ADMIN_EMAILS ?? "")
+      .split(",")
+      .map((e) => e.trim().toLowerCase())
+      .filter(Boolean),
+  );
 }
 
-async function findAdminBySessionToken(token: string): Promise<AdminUser | null> {
-  const session = await prisma.adminSession.findUnique({ where: { token }, include: { adminUser: true } });
-  if (!session) return null;
-  if (session.expiresAt.getTime() < Date.now()) {
-    await prisma.adminSession.delete({ where: { id: session.id } }).catch(() => {});
-    return null;
+async function linkAdminFromClerk(clerkUserId: string, allowed: Set<string>): Promise<AdminAccess> {
+  const user = await currentUser();
+  if (!user) return { status: "signed-out" };
+
+  const verified = user.emailAddresses
+    .filter((e) => e.verification?.status === "verified")
+    .map((e) => e.emailAddress.trim().toLowerCase());
+  const email = verified.find((e) => allowed.has(e));
+  if (!email) {
+    return { status: "forbidden", email: user.primaryEmailAddress?.emailAddress ?? verified[0] ?? null };
   }
-  return session.adminUser;
+
+  const fullName = user.fullName?.trim() || [user.firstName, user.lastName].filter(Boolean).join(" ") || email;
+  const admin = await prisma.adminUser.upsert({
+    where: { email },
+    update: { clerkUserId, fullName },
+    create: { email, clerkUserId, fullName },
+  });
+  return { status: "ok", admin };
 }
+
+/** Deduplicated per request, so a page and its layout share one lookup. */
+export const resolveAdminAccess = cache(async (): Promise<AdminAccess> => {
+  const { userId } = await auth();
+  if (!userId) return { status: "signed-out" };
+
+  const allowed = allowedEmails();
+  // Fast path: already linked, no call to the Clerk API.
+  const linked = await prisma.adminUser.findUnique({ where: { clerkUserId: userId } });
+  if (linked && allowed.has(linked.email.toLowerCase())) return { status: "ok", admin: linked };
+
+  return linkAdminFromClerk(userId, allowed);
+});
 
 /** Nullable — for Server Components that want to render differently when logged out. */
 export async function getCurrentAdmin(): Promise<AdminUser | null> {
-  const cookieStore = await cookies();
-  const token = cookieStore.get(COOKIE_NAME)?.value;
-  if (!token) return null;
-  return findAdminBySessionToken(token);
-}
-
-/** Throws if unauthenticated — call at the top of every /api/admin/** route. */
-export async function requireAdminUser(): Promise<AdminUser> {
-  const admin = await getCurrentAdmin();
-  if (!admin) throw new UnauthorizedError();
-  return admin;
+  const access = await resolveAdminAccess();
+  return access.status === "ok" ? access.admin : null;
 }
 
 /** Convenience wrapper for API routes: `const auth = await requireAdminUserOrResponse(); if ("response" in auth) return auth.response;` */
 export async function requireAdminUserOrResponse(): Promise<{ admin: AdminUser } | { response: NextResponse }> {
-  const admin = await getCurrentAdmin();
-  if (!admin) return { response: NextResponse.json({ error: "Not authenticated" }, { status: 401 }) };
-  return { admin };
-}
-
-/** Returns the admin on success, null on bad credentials — never reveals which field was wrong. */
-export async function loginAdmin(email: string, password: string): Promise<AdminUser | null> {
-  const admin = await prisma.adminUser.findUnique({ where: { email: email.trim().toLowerCase() } });
-  if (!admin) return null;
-
-  const valid = await verifyPassword(password, admin.passwordHash);
-  if (!valid) return null;
-
-  const session = await prisma.adminSession.create({
-    data: { adminUserId: admin.id, expiresAt: new Date(Date.now() + SESSION_DURATION_MS) },
-  });
-
-  const cookieStore = await cookies();
-  cookieStore.set(COOKIE_NAME, session.token, {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "lax",
-    path: "/",
-    maxAge: SESSION_DURATION_MS / 1000,
-  });
-
-  return admin;
-}
-
-export async function logoutAdmin(): Promise<void> {
-  const cookieStore = await cookies();
-  const token = cookieStore.get(COOKIE_NAME)?.value;
-  if (token) {
-    await prisma.adminSession.deleteMany({ where: { token } });
+  const access = await resolveAdminAccess();
+  if (access.status === "signed-out") {
+    return { response: NextResponse.json({ error: "Not authenticated" }, { status: 401 }) };
   }
-  cookieStore.delete(COOKIE_NAME);
+  if (access.status === "forbidden") {
+    return { response: NextResponse.json({ error: "Not authorised" }, { status: 403 }) };
+  }
+  return { admin: access.admin };
 }
